@@ -2,18 +2,20 @@ package com.mapk.fastkfunction
 
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
 
 class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
-    val valueParameters: List<KParameter> = function.valueParameters
+    val valueParameters: List<KParameter>
     private val fullInitializedFunction: (Array<Any?>) -> T
-
-    // TODO: バケツジェネレータの追加
+    private val bucketGenerator: BucketGenerator
 
     init {
+        val parameters: List<KParameter> = function.parameters
         val constructor = function.javaConstructor
+
+        bucketGenerator = BucketGenerator(parameters, instance)
+        valueParameters = parameters.filter { it.kind == KParameter.Kind.VALUE }
 
         fullInitializedFunction = when {
             constructor != null -> {
@@ -21,7 +23,7 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
             }
             instance != null -> {
                 val method = function.javaMethod!!
-                val size = function.parameters.size
+                val size = parameters.size
 
                 @Suppress("UNCHECKED_CAST") { method.invoke(instance, *(it.copyOfRange(1, size))) as T }
             }
@@ -30,6 +32,8 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
             }
         }
     }
+
+    fun generateBucket(): ArgumentBucket = bucketGenerator.generateBucket()
 
     fun call(bucket: ArgumentBucket): T = if (bucket.isFullInitialized())
         fullInitializedFunction(bucket.valueArray)
