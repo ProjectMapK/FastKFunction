@@ -11,7 +11,10 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
     private val bucketGenerator: BucketGenerator
 
     init {
-        val parameters: List<KParameter> = function.parameters
+        val parameters: List<KParameter> = function.parameters.apply {
+            if (isEmpty() || (instance != null && size == 1))
+                throw IllegalArgumentException("This function is not require arguments.")
+        }
         val constructor = function.javaConstructor
 
         bucketGenerator = BucketGenerator(parameters, instance)
