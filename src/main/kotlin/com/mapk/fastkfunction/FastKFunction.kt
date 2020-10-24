@@ -2,6 +2,7 @@ package com.mapk.fastkfunction
 
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
@@ -43,7 +44,13 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
                 }
             }
             else -> {
-                { function.call(*it) }
+                val method = function.javaMethod!!
+
+                // 定義先がobjectであればインスタンスを利用した呼び出しを行う
+                @Suppress("UNCHECKED_CAST")
+                method.declaringClass.kotlin.objectInstance?.let { inst ->
+                    { method.invoke(inst, *it) as T }
+                } ?: { function.call(*it) }
             }
         }
     }
