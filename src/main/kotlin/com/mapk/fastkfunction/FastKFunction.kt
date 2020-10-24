@@ -2,6 +2,7 @@ package com.mapk.fastkfunction
 
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
 
@@ -15,6 +16,10 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
             if (isEmpty() || (instance != null && size == 1))
                 throw IllegalArgumentException("This function is not require arguments.")
         }
+
+        // この関数には確実にアクセスするためアクセシビリティ書き換え
+        function.isAccessible = true
+
         val constructor = function.javaConstructor
 
         bucketGenerator = BucketGenerator(parameters, instance)
