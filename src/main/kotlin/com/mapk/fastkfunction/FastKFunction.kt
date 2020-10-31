@@ -35,14 +35,7 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
                 val method = function.javaMethod!!
 
                 @Suppress("UNCHECKED_CAST")
-                if (parameters[0].kind == KParameter.Kind.VALUE) {
-                    // 通常のインスタンス関数かつインスタンスも渡された場合、invoke時にinstanceを除く加工は不要
-                    { method.invoke(instance, *it) as T }
-                } else {
-                    val size = parameters.size
-                    // 拡張関数やコンパニオンオブジェクトから直取得した関数の想定
-                    { method.invoke(instance, *(it.copyOfRange(1, size))) as T }
-                }
+                { method.invoke(instance, *it) as T }
             }
             else -> {
                 val method = function.javaMethod!!
