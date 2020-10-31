@@ -5,8 +5,9 @@ import kotlin.reflect.KParameter
 
 class ArgumentBucket(
     private val keyList: List<KParameter>,
-    val valueArray: Array<Any?>,
-    private val initializationStatuses: BooleanArray
+    private val valueArray: Array<Any?>,
+    private val initializationStatuses: BooleanArray,
+    private val valueArrayGetter: (Array<Any?>) -> Array<Any?>
 ) : Map<KParameter, Any?> {
     class Entry internal constructor(
         override val key: KParameter,
@@ -14,6 +15,8 @@ class ArgumentBucket(
     ) : Map.Entry<KParameter, Any?>
 
     fun isFullInitialized(): Boolean = initializationStatuses.all { it }
+
+    fun getValueArray(): Array<Any?> = valueArrayGetter(valueArray)
 
     fun put(key: KParameter, value: Any?): Any? {
         return valueArray[key.index].apply {
