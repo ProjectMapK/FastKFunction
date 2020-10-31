@@ -2,7 +2,6 @@ package com.mapk.fastkfunction
 
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
