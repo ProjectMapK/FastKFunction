@@ -9,7 +9,7 @@ import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
 
 class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
-    val valueParameters: List<KParameter>
+    val valueParameters: List<KParameter> // 公開するのはバインドに使うパラメータのみ
     private val fullInitializedFunction: (Array<Any?>) -> T
     private val bucketGenerator: BucketGenerator
 
