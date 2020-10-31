@@ -2,6 +2,7 @@ package com.mapk.fastkfunction
 
 import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
 import com.mapk.fastkfunction.argumentbucket.BucketGenerator
+import java.lang.UnsupportedOperationException
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.isAccessible
@@ -40,11 +41,16 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
             else -> {
                 val method = function.javaMethod!!
 
-                // 定義先がobjectであればインスタンスを利用した呼び出しを行う
-                @Suppress("UNCHECKED_CAST")
-                method.declaringClass.kotlin.objectInstance?.let { inst ->
-                    { method.invoke(inst, *it) as T }
-                } ?: { function.call(*it) }
+                try {
+                    // 定義先がobjectであればインスタンスを利用した呼び出しを行う
+                    @Suppress("UNCHECKED_CAST")
+                    method.declaringClass.kotlin.objectInstance?.let { inst ->
+                        { method.invoke(inst, *it) as T }
+                    } ?: { function.call(*it) }
+                } catch (e: UnsupportedOperationException) {
+                    // トップレベル関数ではobjectInstanceを取得しようとするとUnsupportedOperationExceptionになるためtryする形とした
+                    { function.call(*it) }
+                }
             }
         }
     }
