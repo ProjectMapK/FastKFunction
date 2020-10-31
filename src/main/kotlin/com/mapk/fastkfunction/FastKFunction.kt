@@ -58,5 +58,6 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
 
     fun call(args: Collection<Any?>): T = fullInitializedFunction(args.toTypedArray())
 
-    fun call(args: Array<Any?>): T = fullInitializedFunction(args)
+    @Suppress("UNCHECKED_CAST")
+    fun call(vararg args: Any?): T = fullInitializedFunction(args as Array<Any?>)
 }
