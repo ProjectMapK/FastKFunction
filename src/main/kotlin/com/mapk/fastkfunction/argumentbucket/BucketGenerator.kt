@@ -1,4 +1,4 @@
-package com.mapk.fastkfunction
+package com.mapk.fastkfunction.argumentbucket
 
 import kotlin.reflect.KParameter
 

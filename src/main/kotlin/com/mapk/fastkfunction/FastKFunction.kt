@@ -1,5 +1,7 @@
 package com.mapk.fastkfunction
 
+import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
+import com.mapk.fastkfunction.argumentbucket.BucketGenerator
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.isAccessible
