@@ -1,5 +1,6 @@
 package com.mapk.fastkfunction.argumentbucket
 
+import java.lang.UnsupportedOperationException
 import kotlin.reflect.KParameter
 
 class ArgumentBucket(
@@ -12,15 +13,12 @@ class ArgumentBucket(
         override var value: Any?
     ) : Map.Entry<KParameter, Any?>
 
-    private var _size: Int = initializationStatuses.count { it }
-
     fun isFullInitialized(): Boolean = initializationStatuses.all { it }
 
     fun put(key: KParameter, value: Any?): Any? {
         return valueArray[key.index].apply {
             valueArray[key.index] = value
             initializationStatuses[key.index] = true
-            _size++
         }
     }
 
@@ -28,7 +26,6 @@ class ArgumentBucket(
         return valueArray[index].apply {
             valueArray[index] = value
             initializationStatuses[index] = true
-            _size++
         }
     }
 
@@ -39,7 +36,6 @@ class ArgumentBucket(
             null.apply {
                 valueArray[key.index] = value
                 initializationStatuses[key.index] = true
-                _size++
             }
     }
 
@@ -50,7 +46,6 @@ class ArgumentBucket(
             null.apply {
                 valueArray[index] = value
                 initializationStatuses[index] = true
-                _size++
             }
     }
 
@@ -63,7 +58,7 @@ class ArgumentBucket(
             acc.apply { if (initializationStatuses[cur.index]) add(cur) }
         }
     override val size: Int
-        get() = _size
+        get() = throw UnsupportedOperationException()
     override val values: Collection<Any?>
         get() = valueArray.filterIndexed { idx, _ -> initializationStatuses[idx] }
 
@@ -74,5 +69,5 @@ class ArgumentBucket(
 
     override fun get(key: KParameter): Any? = valueArray[key.index]
 
-    override fun isEmpty(): Boolean = _size == 0
+    override fun isEmpty(): Boolean = throw UnsupportedOperationException()
 }
