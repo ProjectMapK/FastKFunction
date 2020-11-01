@@ -11,7 +11,7 @@ import kotlin.reflect.jvm.javaMethod
 
 class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
     val valueParameters: List<KParameter> // 公開するのはバインドに使うパラメータのみ
-    private val fullInitializedFunction: (Array<Any?>) -> T
+    private val fullInitializedFunction: (Array<out Any?>) -> T
     private val bucketGenerator: BucketGenerator
 
     init {
@@ -65,5 +65,5 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
     fun call(args: Collection<Any?>): T = fullInitializedFunction(args.toTypedArray())
 
     @Suppress("UNCHECKED_CAST")
-    fun call(vararg args: Any?): T = fullInitializedFunction(args as Array<Any?>)
+    fun call(vararg args: Any?): T = fullInitializedFunction(args)
 }
