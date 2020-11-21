@@ -33,6 +33,10 @@ class ArgumentBucket(
         }
     }
 
+    /**
+     * If the specified key is not already associated with a value associates it with the given value and returns
+     * {@code null}, else returns the current value.
+     */
     fun setIfAbsent(key: KParameter, value: Any?): Any? {
         return if (initializationStatuses[key.index])
             valueArray[key.index]
@@ -43,6 +47,10 @@ class ArgumentBucket(
             }
     }
 
+    /**
+     * If the specified key is not already associated with a value associates it with the given value and returns
+     * {@code null}, else returns the current value.
+     */
     fun setIfAbsent(index: Int, value: Any?): Any? {
         return if (initializationStatuses[index])
             valueArray[index]
