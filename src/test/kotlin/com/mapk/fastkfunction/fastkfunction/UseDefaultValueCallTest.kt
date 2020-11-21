@@ -95,8 +95,8 @@ private class UseDefaultValueCallTest {
         val bucket = sut.generateBucket().apply {
             val params = target.parameters.filter { it.kind == KParameter.Kind.VALUE && !it.isOptional }
 
-            put(params[0], 100)
-            put(params[1], "txt")
+            set(params[0], 100)
+            set(params[1], "txt")
         }
 
         assertDoesNotThrow("Fail ${default.name}") {

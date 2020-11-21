@@ -18,21 +18,21 @@ class ArgumentBucket(
 
     fun getValueArray(): Array<Any?> = valueArrayGetter(valueArray)
 
-    fun put(key: KParameter, value: Any?): Any? {
+    operator fun set(key: KParameter, value: Any?): Any? {
         return valueArray[key.index].apply {
             valueArray[key.index] = value
             initializationStatuses[key.index] = true
         }
     }
 
-    fun put(index: Int, value: Any?): Any? {
+    operator fun set(index: Int, value: Any?): Any? {
         return valueArray[index].apply {
             valueArray[index] = value
             initializationStatuses[index] = true
         }
     }
 
-    fun putIfAbsent(key: KParameter, value: Any?): Any? {
+    fun setIfAbsent(key: KParameter, value: Any?): Any? {
         return if (initializationStatuses[key.index])
             valueArray[key.index]
         else
@@ -42,7 +42,7 @@ class ArgumentBucket(
             }
     }
 
-    fun putIfAbsent(index: Int, value: Any?): Any? {
+    fun setIfAbsent(index: Int, value: Any?): Any? {
         return if (initializationStatuses[index])
             valueArray[index]
         else
