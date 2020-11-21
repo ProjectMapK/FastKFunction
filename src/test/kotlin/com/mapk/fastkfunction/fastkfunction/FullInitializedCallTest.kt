@@ -40,7 +40,7 @@ private class FullInitializedCallTest {
 
     data class Dst(val arg1: Int, val arg2: String) {
         companion object {
-            fun of(arg1: Int,  arg2: String) = Dst(arg1, arg2)
+            fun of(arg1: Int, arg2: String) = Dst(arg1, arg2)
         }
     }
 
