@@ -72,6 +72,7 @@ class ArgumentBucket(
         .any { initializationStatuses[it.index] && it.value == value }
 
     override fun get(key: KParameter): Any? = valueArray[key.index]
+    operator fun get(index: Int): Any? = valueArray[index]
 
     // サイズ系の処理はVALUEパラメータ以外を考慮した際の整合性を考えることが難しく、使う場面も無いためUnsupported
     override val size: Int
