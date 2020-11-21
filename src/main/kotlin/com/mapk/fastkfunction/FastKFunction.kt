@@ -67,7 +67,7 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
 
     fun generateBucket(): ArgumentBucket = bucketGenerator.generateBucket()
 
-    fun call(bucket: ArgumentBucket): T = if (bucket.isFullInitialized())
+    fun callBy(bucket: ArgumentBucket): T = if (bucket.isFullInitialized())
         fullInitializedFunction(bucket.getValueArray())
     else
         function.callBy(bucket)
