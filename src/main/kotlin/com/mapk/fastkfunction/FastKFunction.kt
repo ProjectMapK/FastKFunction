@@ -17,9 +17,13 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
     private val bucketGenerator: BucketGenerator
 
     init {
+        // 引数を要求しないか、複数のインスタンスを求める場合エラーとする
         val parameters: List<KParameter> = function.parameters.apply {
             if (isEmpty() || (instance != null && size == 1))
                 throw IllegalArgumentException("This function is not require arguments.")
+
+            if (3 <= size && get(0).kind != KParameter.Kind.VALUE && get(1).kind != KParameter.Kind.VALUE)
+                throw IllegalArgumentException("This function is require multiple instances.")
         }
 
         // この関数には確実にアクセスするためアクセシビリティ書き換え
@@ -39,7 +43,6 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
             @Suppress("UNCHECKED_CAST") // methodはTを返せないため強制キャスト
             when (parameters[0].kind) {
                 KParameter.Kind.EXTENSION_RECEIVER -> {
-                    // TODO: インスタンスに定義した拡張関数 = インスタンスとレシーバ両方が要求される場合throw
                     // 対象が拡張関数なら、instanceはreceiver
                     bucketGenerator = BucketGenerator(parameters, instance)
                     fullInitializedFunction = { method.invoke(null, instance, *it) as T }
