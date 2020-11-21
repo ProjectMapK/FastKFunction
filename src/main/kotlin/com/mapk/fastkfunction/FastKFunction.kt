@@ -16,15 +16,19 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
     private val fullInitializedFunction: (Array<out Any?>) -> T
     private val bucketGenerator: BucketGenerator
 
-    init {
-        // 引数を要求しないか、複数のインスタンスを求める場合エラーとする
-        val parameters: List<KParameter> = function.parameters.apply {
+    companion object {
+        private fun List<KParameter>.checkParameters(instance: Any?) = apply {
             if (isEmpty() || (instance != null && size == 1))
                 throw IllegalArgumentException("This function is not require arguments.")
 
             if (3 <= size && get(0).kind != KParameter.Kind.VALUE && get(1).kind != KParameter.Kind.VALUE)
                 throw IllegalArgumentException("This function is require multiple instances.")
         }
+    }
+
+    init {
+        // 引数を要求しないか、複数のインスタンスを求める場合エラーとする
+        val parameters: List<KParameter> = function.parameters.checkParameters(instance)
 
         // この関数には確実にアクセスするためアクセシビリティ書き換え
         function.isAccessible = true
