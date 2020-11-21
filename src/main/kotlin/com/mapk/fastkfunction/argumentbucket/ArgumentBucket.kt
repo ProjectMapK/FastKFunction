@@ -65,10 +65,12 @@ class ArgumentBucket(
     override val values: Collection<Any?>
         get() = valueArray.filterIndexed { idx, _ -> initializationStatuses[idx] }
 
-    // keyはインスタンスの一致を見る
-    override fun containsKey(key: KParameter): Boolean = keyList[key.index] === key
+    // keyはインスタンスの一致と初期化状態を見る
+    override fun containsKey(key: KParameter): Boolean =
+        keyList[key.index] === key && initializationStatuses[key.index]
 
-    override fun containsValue(value: Any?): Boolean = valueArray.any { it == value }
+    override fun containsValue(value: Any?): Boolean = valueArray.withIndex()
+        .any { initializationStatuses[it.index] && it.value == value }
 
     override fun get(key: KParameter): Any? = valueArray[key.index]
 
