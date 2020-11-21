@@ -2,6 +2,7 @@ package com.mapk.fastkfunction
 
 import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
 import com.mapk.fastkfunction.argumentbucket.BucketGenerator
+import java.lang.Exception
 import java.lang.UnsupportedOperationException
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
@@ -44,9 +45,23 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
                     fullInitializedFunction = { method.invoke(null, instance, *it) as T }
                 }
                 KParameter.Kind.INSTANCE -> {
-                    // 対象がインスタンスを要求する関数なら、instanceはobject
-                    bucketGenerator = BucketGenerator(parameters, instance)
-                    fullInitializedFunction = { method.invoke(instance, *it) as T }
+                    if (instance != null) {
+                        // 対象がインスタンスを要求する関数なら、instanceはobject
+                        bucketGenerator = BucketGenerator(parameters, instance)
+                        fullInitializedFunction = { method.invoke(instance, *it) as T }
+                    } else {
+                        // パラメータ上でインスタンスが要求されているが、入力のinstanceがnullだった場合、methodから取得を試みる
+                        try {
+                            val instanceFromClass = method.declaringClass.kotlin.objectInstance!!
+
+                            bucketGenerator = BucketGenerator(parameters, instanceFromClass)
+                            fullInitializedFunction = { method.invoke(instanceFromClass, *it) as T }
+                        } catch (e: Exception) {
+                            throw IllegalArgumentException(
+                                "Function requires INSTANCE parameter, but is not present.", e
+                            )
+                        }
+                    }
                 }
                 KParameter.Kind.VALUE -> {
                     bucketGenerator = BucketGenerator(parameters, null)
