@@ -3,6 +3,7 @@ package com.mapk.fastkfunction
 import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
 import com.mapk.fastkfunction.argumentbucket.BucketGenerator
 import java.lang.UnsupportedOperationException
+import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.isAccessible
@@ -50,15 +51,24 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
                 KParameter.Kind.VALUE -> {
                     bucketGenerator = BucketGenerator(parameters, null)
 
-                    fullInitializedFunction = try {
-                        // 定義先がobjectであればインスタンスを利用した呼び出しを行い、そうでなければ普通に呼び出す
-                        @Suppress("UNCHECKED_CAST")
-                        method.declaringClass.kotlin.objectInstance
-                            ?.let { inst -> { method.invoke(inst, *it) as T } }
-                            ?: { function.call(*it) }
-                    } catch (e: UnsupportedOperationException) {
-                        // トップレベル関数ではobjectInstanceを取得しようとするとUnsupportedOperationExceptionになるためtryする
-                        { function.call(*it) }
+                    fullInitializedFunction = if (instance != null) {
+                        // staticメソッドならば渡されたのが拡張関数でinstanceはレシーバと見做す
+                        if (Modifier.isStatic(method.modifiers)) {
+                            { method.invoke(null, instance, *it) as T }
+                        } else {
+                            { method.invoke(instance, *it) as T }
+                        }
+                    } else {
+                        try {
+                            // 定義先がobjectであればインスタンスを利用した呼び出しを行い、そうでなければ普通に呼び出す
+                            @Suppress("UNCHECKED_CAST")
+                            method.declaringClass.kotlin.objectInstance
+                                ?.let { inst -> { method.invoke(inst, *it) as T } }
+                                ?: { function.call(*it) }
+                        } catch (e: UnsupportedOperationException) {
+                            // トップレベル関数でobjectInstanceを取得しようとするとUnsupportedOperationExceptionになるためtryする
+                            { function.call(*it) }
+                        }
                     }
                 }
             }
