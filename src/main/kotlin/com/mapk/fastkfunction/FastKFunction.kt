@@ -28,45 +28,43 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
 
         // この関数には確実にアクセスするためアクセシビリティ書き換え
         function.isAccessible = true
-        // TODO: valueParametersの生成関連の効率化
-        valueParameters = parameters.filter { it.kind == KParameter.Kind.VALUE }
 
         val constructor = function.javaConstructor
 
         if (constructor != null) {
+            valueParameters = parameters
             bucketGenerator = BucketGenerator(parameters, null)
             fullInitializedFunction = { constructor.newInstance(*it) }
         } else {
             val method = function.javaMethod!!
 
-            // TODO: 必要な場面でインスタンスがnullならthrow
             @Suppress("UNCHECKED_CAST") // methodはTを返せないため強制キャスト
             when (parameters[0].kind) {
                 KParameter.Kind.EXTENSION_RECEIVER -> {
-                    // 対象が拡張関数なら、instanceはreceiver
+                    // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
+                    instance ?: throw IllegalArgumentException(
+                        "Function requires EXTENSION_RECEIVER instance, but is not present."
+                    )
+
+                    valueParameters = parameters.subList(1, parameters.size)
                     bucketGenerator = BucketGenerator(parameters, instance)
                     fullInitializedFunction = { method.invoke(null, instance, *it) as T }
                 }
                 KParameter.Kind.INSTANCE -> {
-                    if (instance != null) {
-                        // 対象がインスタンスを要求する関数なら、instanceはobject
-                        bucketGenerator = BucketGenerator(parameters, instance)
-                        fullInitializedFunction = { method.invoke(instance, *it) as T }
-                    } else {
-                        // パラメータ上でインスタンスが要求されているが、入力のinstanceがnullだった場合、methodから取得を試みる
-                        try {
-                            val instanceFromClass = method.declaringObject!!
+                    valueParameters = parameters.subList(1, parameters.size)
 
-                            bucketGenerator = BucketGenerator(parameters, instanceFromClass)
-                            fullInitializedFunction = { method.invoke(instanceFromClass, *it) as T }
-                        } catch (e: Exception) {
-                            throw IllegalArgumentException(
-                                "Function requires INSTANCE parameter, but is not present.", e
-                            )
-                        }
+                    // 対象がインスタンスを要求する関数ならinstanceはobject、与えられたインスタンスがnullでもobjectからの取得を試みる
+                    val nonNullInstance = instance ?: try {
+                        method.declaringObject!!
+                    } catch (e: Exception) {
+                        throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.", e)
                     }
+
+                    bucketGenerator = BucketGenerator(parameters, nonNullInstance)
+                    fullInitializedFunction = { method.invoke(nonNullInstance, *it) as T }
                 }
                 KParameter.Kind.VALUE -> {
+                    valueParameters = parameters
                     bucketGenerator = BucketGenerator(parameters, null)
 
                     fullInitializedFunction = if (instance != null) {
