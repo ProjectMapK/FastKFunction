@@ -27,8 +27,12 @@ private fun FullInitializedCallTest.Class.topLevelExtensionFunc(arg1: Int, arg2:
  * - インスタンスメソッド + インスタンス
  * - コンパニオンオブジェクトに定義したメソッド
  * - コンパニオンオブジェクトに定義したメソッド + コンパニオンオブジェクトインスタンス
+ * - リフレクションで取得したコンパニオンオブジェクトに定義したメソッド
+ * - リフレクションで取得したコンパニオンオブジェクトに定義したメソッド + コンパニオンオブジェクトインスタンス
  * - トップレベル関数
- * - トップレベル拡張関数 + レシーバインスタンス
+ * - クラスから取得したトップレベル拡張関数 + レシーバインスタンス
+ * - インスタンスから取得したトップレベル拡張関数
+ * - インスタンスから取得したトップレベル拡張関数 + インスタンス
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 private class FullInitializedCallTest {
@@ -84,9 +88,21 @@ private class FullInitializedCallTest {
             Arguments.of(::instanceFunction, null, "instance func"),
             Arguments.of(::instanceFunction, this, "instance func with instance"),
             Arguments.of((Dst)::of, null, "companion object func"),
-            Arguments.of(companionRawFunc, Dst::class.companionObjectInstance, "companion object func with instance"),
+            Arguments.of((Dst)::of, Dst::class.companionObjectInstance, "companion object func with instance"),
+            Arguments.of(companionRawFunc, null, "companion object func from reflection"),
+            Arguments.of(
+                companionRawFunc,
+                Dst::class.companionObjectInstance,
+                "companion object func from reflection with instance"
+            ),
             Arguments.of(::topLevelFunc, null, "top level func"),
-            Arguments.of(Class::topLevelExtensionFunc, Class(), "top level extension func")
+            Arguments.of(Class::topLevelExtensionFunc, Class(), "top level extension func from class"),
+            Class().let {
+                Arguments.of(it::topLevelExtensionFunc, null, "top level extension func from instance")
+            },
+            Class().let {
+                Arguments.of(it::topLevelExtensionFunc, it, "top level extension func from instance with instance")
+            }
         ).stream()
     }
 }
