@@ -23,7 +23,7 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
         // この関数には確実にアクセスするためアクセシビリティ書き換え
         function.isAccessible = true
 
-        bucketGenerator = BucketGenerator(parameters)
+        bucketGenerator = BucketGenerator(parameters, instance)
         valueParameters = parameters.filter { it.kind == KParameter.Kind.VALUE }
 
         val constructor = function.javaConstructor
