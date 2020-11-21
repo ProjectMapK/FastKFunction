@@ -16,7 +16,8 @@ class ArgumentBucket(
 
     fun isFullInitialized(): Boolean = initializationStatuses.all { it }
 
-    fun getValueArray(): Array<Any?> = valueArrayGetter(valueArray)
+    // getValueArrayは内部処理でしか利用しないためinternal化
+    internal fun getValueArray(): Array<Any?> = valueArrayGetter(valueArray)
 
     operator fun set(key: KParameter, value: Any?): Any? {
         return valueArray[key.index].apply {
