@@ -61,7 +61,6 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
                     } else {
                         try {
                             // 定義先がobjectであればインスタンスを利用した呼び出しを行い、そうでなければ普通に呼び出す
-                            @Suppress("UNCHECKED_CAST")
                             method.declaringClass.kotlin.objectInstance
                                 ?.let { inst -> { method.invoke(inst, *it) as T } }
                                 ?: { function.call(*it) }
