@@ -52,7 +52,7 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
                     } else {
                         // パラメータ上でインスタンスが要求されているが、入力のinstanceがnullだった場合、methodから取得を試みる
                         try {
-                            val instanceFromClass = method.declaringClass.kotlin.objectInstance!!
+                            val instanceFromClass = method.declaringObject!!
 
                             bucketGenerator = BucketGenerator(parameters, instanceFromClass)
                             fullInitializedFunction = { method.invoke(instanceFromClass, *it) as T }
@@ -76,7 +76,7 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
                     } else {
                         try {
                             // 定義先がobjectであればインスタンスを利用した呼び出しを行い、そうでなければ普通に呼び出す
-                            method.declaringClass.kotlin.objectInstance
+                            method.declaringObject
                                 ?.let { instanceFromClass -> { method.invoke(instanceFromClass, *it) as T } }
                                 ?: { function.call(*it) }
                         } catch (e: UnsupportedOperationException) {
