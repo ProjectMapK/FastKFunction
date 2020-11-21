@@ -22,34 +22,44 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
 
         // この関数には確実にアクセスするためアクセシビリティ書き換え
         function.isAccessible = true
-
-        bucketGenerator = BucketGenerator(parameters, instance)
+        // TODO: valueParametersの生成関連の効率化
         valueParameters = parameters.filter { it.kind == KParameter.Kind.VALUE }
 
         val constructor = function.javaConstructor
 
-        fullInitializedFunction = when {
-            constructor != null -> {
-                { constructor.newInstance(*it) }
-            }
-            instance != null -> {
-                val method = function.javaMethod!!
+        if (constructor != null) {
+            bucketGenerator = BucketGenerator(parameters, null)
+            fullInitializedFunction = { constructor.newInstance(*it) }
+        } else {
+            val method = function.javaMethod!!
 
-                @Suppress("UNCHECKED_CAST")
-                { method.invoke(instance, *it) as T }
-            }
-            else -> {
-                val method = function.javaMethod!!
+            // TODO: 必要な場面でインスタンスがnullならthrow
+            @Suppress("UNCHECKED_CAST") // methodはTを返せないため強制キャスト
+            when (parameters[0].kind) {
+                KParameter.Kind.EXTENSION_RECEIVER -> {
+                    // TODO: インスタンスに定義した拡張関数 = インスタンスとレシーバ両方が要求される場合throw
+                    // 対象が拡張関数なら、instanceはreceiver
+                    bucketGenerator = BucketGenerator(parameters, instance)
+                    fullInitializedFunction = { method.invoke(null, instance, *it) as T }
+                }
+                KParameter.Kind.INSTANCE -> {
+                    // 対象がインスタンスを要求する関数なら、instanceはobject
+                    bucketGenerator = BucketGenerator(parameters, instance)
+                    fullInitializedFunction = { method.invoke(instance, *it) as T }
+                }
+                KParameter.Kind.VALUE -> {
+                    bucketGenerator = BucketGenerator(parameters, null)
 
-                try {
-                    // 定義先がobjectであればインスタンスを利用した呼び出しを行う
-                    @Suppress("UNCHECKED_CAST")
-                    method.declaringClass.kotlin.objectInstance?.let { inst ->
-                        { method.invoke(inst, *it) as T }
-                    } ?: { function.call(*it) }
-                } catch (e: UnsupportedOperationException) {
-                    // トップレベル関数ではobjectInstanceを取得しようとするとUnsupportedOperationExceptionになるためtryする形とした
-                    { function.call(*it) }
+                    fullInitializedFunction = try {
+                        // 定義先がobjectであればインスタンスを利用した呼び出しを行い、そうでなければ普通に呼び出す
+                        @Suppress("UNCHECKED_CAST")
+                        method.declaringClass.kotlin.objectInstance
+                            ?.let { inst -> { method.invoke(inst, *it) as T } }
+                            ?: { function.call(*it) }
+                    } catch (e: UnsupportedOperationException) {
+                        // トップレベル関数ではobjectInstanceを取得しようとするとUnsupportedOperationExceptionになるためtryする
+                        { function.call(*it) }
+                    }
                 }
             }
         }
