@@ -60,8 +60,6 @@ class ArgumentBucket(
         get() = keys.fold(HashSet()) { acc, cur ->
             acc.apply { if (initializationStatuses[cur.index]) add(cur) }
         }
-    override val size: Int
-        get() = throw UnsupportedOperationException()
     override val values: Collection<Any?>
         get() = valueArray.filterIndexed { idx, _ -> initializationStatuses[idx] }
 
@@ -74,5 +72,8 @@ class ArgumentBucket(
 
     override fun get(key: KParameter): Any? = valueArray[key.index]
 
+    // サイズ系の処理はVALUEパラメータ以外を考慮した際の整合性を考えることが難しく、使う場面も無いためUnsupported
+    override val size: Int
+        get() = throw UnsupportedOperationException()
     override fun isEmpty(): Boolean = throw UnsupportedOperationException()
 }
