@@ -72,7 +72,7 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
     else
         function.callBy(bucket)
 
-    fun call(args: Collection<Any?>): T = fullInitializedFunction(args.toTypedArray())
+    fun callByCollection(args: Collection<Any?>): T = fullInitializedFunction(args.toTypedArray())
 
     @Suppress("UNCHECKED_CAST")
     fun call(vararg args: Any?): T = fullInitializedFunction(args)
