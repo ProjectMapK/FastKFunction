@@ -4,6 +4,7 @@ import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
 import com.mapk.fastkfunction.argumentbucket.BucketGenerator
 import java.lang.Exception
 import java.lang.UnsupportedOperationException
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -24,6 +25,17 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
             if (3 <= size && get(0).kind != KParameter.Kind.VALUE && get(1).kind != KParameter.Kind.VALUE)
                 throw IllegalArgumentException("This function is require multiple instances.")
         }
+
+        private fun <T> getFunctionCall(function: KFunction<T>): (Array<out Any?>) -> T = { function.call(*it) }
+
+        // methodはTを返せないため強制キャスト
+        @Suppress("UNCHECKED_CAST")
+        private fun <T> getStaticMethodCall(method: Method, instance: Any): (Array<out Any?>) -> T =
+            { method.invoke(null, instance, *it) as T }
+
+        @Suppress("UNCHECKED_CAST")
+        private fun <T> getInstanceMethodCall(method: Method, instance: Any): (Array<out Any?>) -> T =
+            { method.invoke(instance, *it) as T }
     }
 
     init {
@@ -42,7 +54,6 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
         } else {
             val method = function.javaMethod!!
 
-            @Suppress("UNCHECKED_CAST") // methodはTを返せないため強制キャスト
             when (parameters[0].kind) {
                 KParameter.Kind.EXTENSION_RECEIVER -> {
                     // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
@@ -52,7 +63,7 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
 
                     valueParameters = parameters.subList(1, parameters.size)
                     bucketGenerator = BucketGenerator(parameters, instance)
-                    fullInitializedFunction = { method.invoke(null, instance, *it) as T }
+                    fullInitializedFunction = getStaticMethodCall(method, instance)
                 }
                 KParameter.Kind.INSTANCE -> {
                     valueParameters = parameters.subList(1, parameters.size)
@@ -65,7 +76,7 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
                     }
 
                     bucketGenerator = BucketGenerator(parameters, nonNullInstance)
-                    fullInitializedFunction = { method.invoke(nonNullInstance, *it) as T }
+                    fullInitializedFunction = getInstanceMethodCall(method, nonNullInstance)
                 }
                 KParameter.Kind.VALUE -> {
                     valueParameters = parameters
@@ -74,19 +85,19 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any?) {
                     fullInitializedFunction = if (instance != null) {
                         // staticメソッドならば渡されたのが拡張関数でinstanceはレシーバと見做す
                         if (Modifier.isStatic(method.modifiers)) {
-                            { method.invoke(null, instance, *it) as T }
+                            getStaticMethodCall(method, instance)
                         } else {
-                            { method.invoke(instance, *it) as T }
+                            getInstanceMethodCall(method, instance)
                         }
                     } else {
                         try {
                             // 定義先がobjectであればインスタンスを利用した呼び出しを行い、そうでなければ普通に呼び出す
                             method.declaringObject
-                                ?.let { instanceFromClass -> { method.invoke(instanceFromClass, *it) as T } }
-                                ?: { function.call(*it) }
+                                ?.let { instanceFromClass -> getInstanceMethodCall(method, instanceFromClass) }
+                                ?: getFunctionCall(function)
                         } catch (e: UnsupportedOperationException) {
                             // トップレベル関数でobjectInstanceを取得しようとするとUnsupportedOperationExceptionになるためtryする
-                            { function.call(*it) }
+                            getFunctionCall(function)
                         }
                     }
                 }
