@@ -1,5 +1,6 @@
 package com.mapk.fastkfunction.argumentbucket
 
+import org.jetbrains.annotations.TestOnly
 import kotlin.reflect.KParameter
 
 internal class BucketGenerator(private val parameters: List<KParameter>, instance: Any?) {
@@ -16,6 +17,13 @@ internal class BucketGenerator(private val parameters: List<KParameter>, instanc
             valueArrayGetter = { it }
         }
     }
+
+    @TestOnly
+    fun getOriginalValueArray() = originalValueArray.clone()
+    @TestOnly
+    fun getOriginalInitializationStatuses() = originalInitializationStatuses.clone()
+    @TestOnly
+    fun getValueArrayGetter() = valueArrayGetter
 
     fun generateBucket(): ArgumentBucket =
         ArgumentBucket(parameters, originalValueArray.clone(), originalInitializationStatuses.clone(), valueArrayGetter)
