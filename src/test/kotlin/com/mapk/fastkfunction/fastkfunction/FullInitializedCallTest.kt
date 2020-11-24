@@ -14,7 +14,7 @@ import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.functions
 
-private fun topLevelFunc(arg1: Int,  arg2: String): FullInitializedCallTest.Dst =
+private fun topLevelFunc(arg1: Int, arg2: String): FullInitializedCallTest.Dst =
     FullInitializedCallTest.Dst(arg1, arg2)
 
 private fun FullInitializedCallTest.Class.topLevelExtensionFunc(arg1: Int, arg2: String): FullInitializedCallTest.Dst =
