@@ -1,5 +1,7 @@
 plugins {
     kotlin("jvm") version "1.4.10"
+    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
+    id("jacoco")
 }
 
 group = "com.mapk"
@@ -31,7 +33,16 @@ tasks {
             jvmTarget = "1.8"
         }
     }
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
+            csv.isEnabled = false
+            html.isEnabled = true
+        }
+    }
     test {
         useJUnitPlatform()
+        // テスト終了時にjacocoのレポートを生成する
+        finalizedBy(jacocoTestReport)
     }
 }
