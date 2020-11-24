@@ -29,19 +29,27 @@ enum class DefaultValues {
 }
 
 private fun topLevelFunc(
-    arg1: Int,  arg2: String, arg3: String = DefaultValues.TopLevelFunc.name
+    arg1: Int,
+    arg2: String,
+    arg3: String = DefaultValues.TopLevelFunc.name
 ): UseDefaultValueCallTest.Dst = UseDefaultValueCallTest.Dst(arg1, arg2, arg3)
 
 private fun UseDefaultValueCallTest.Class.topLevelExtensionFunc(
-    arg1: Int, arg2: String, arg3: String = DefaultValues.TopLevelExtensionFunc.name
+    arg1: Int,
+    arg2: String,
+    arg3: String = DefaultValues.TopLevelExtensionFunc.name
 ): UseDefaultValueCallTest.Dst = UseDefaultValueCallTest.Dst(arg1, arg2, arg3)
 
 private fun UseDefaultValueCallTest.Class.topLevelExtensionFuncFromInstance(
-    arg1: Int, arg2: String, arg3: String = DefaultValues.TopLevelExtensionFuncFromInstance.name
+    arg1: Int,
+    arg2: String,
+    arg3: String = DefaultValues.TopLevelExtensionFuncFromInstance.name
 ): UseDefaultValueCallTest.Dst = UseDefaultValueCallTest.Dst(arg1, arg2, arg3)
 
 private fun UseDefaultValueCallTest.Class.topLevelExtensionFuncFromInstanceWithInstance(
-    arg1: Int, arg2: String, arg3: String = DefaultValues.TopLevelExtensionFuncFromInstanceWithInstance.name
+    arg1: Int,
+    arg2: String,
+    arg3: String = DefaultValues.TopLevelExtensionFuncFromInstanceWithInstance.name
 ): UseDefaultValueCallTest.Dst = UseDefaultValueCallTest.Dst(arg1, arg2, arg3)
 
 /**
@@ -68,15 +76,21 @@ private class UseDefaultValueCallTest {
                 Dst(arg1, arg2, arg3)
 
             fun ofWithInstance(
-                arg1: Int, arg2: String, arg3: String = DefaultValues.CompanionObjectFuncWithInstance.name
+                arg1: Int,
+                arg2: String,
+                arg3: String = DefaultValues.CompanionObjectFuncWithInstance.name
             ) = Dst(arg1, arg2, arg3)
 
             fun ofFromReflection(
-                arg1: Int, arg2: String, arg3: String = DefaultValues.CompanionObjectFuncFromReflection.name
+                arg1: Int,
+                arg2: String,
+                arg3: String = DefaultValues.CompanionObjectFuncFromReflection.name
             ) = Dst(arg1, arg2, arg3)
 
             fun ofFromReflectionWithInstance(
-                arg1: Int, arg2: String, arg3: String = DefaultValues.CompanionObjectFuncFromReflectionWithInstance.name
+                arg1: Int,
+                arg2: String,
+                arg3: String = DefaultValues.CompanionObjectFuncFromReflectionWithInstance.name
             ) = Dst(arg1, arg2, arg3)
         }
     }
@@ -85,7 +99,9 @@ private class UseDefaultValueCallTest {
         Dst(arg1, arg2, arg3)
 
     private fun instanceFunctionWithInstance(
-        arg1: Int, arg2: String, arg3: String = DefaultValues.InstanceFuncWithInstance.name
+        arg1: Int,
+        arg2: String,
+        arg3: String = DefaultValues.InstanceFuncWithInstance.name
     ) = Dst(arg1, arg2, arg3)
 
     @ParameterizedTest
@@ -115,7 +131,9 @@ private class UseDefaultValueCallTest {
             Arguments.of(::instanceFunctionWithInstance, this, DefaultValues.InstanceFuncWithInstance),
             Arguments.of((Dst)::of, null, DefaultValues.CompanionObjectFunc),
             Arguments.of(
-                (Dst)::ofWithInstance, Dst::class.companionObjectInstance, DefaultValues.CompanionObjectFuncWithInstance
+                (Dst)::ofWithInstance,
+                Dst::class.companionObjectInstance,
+                DefaultValues.CompanionObjectFuncWithInstance
             ),
             Arguments.of(ofFromReflection, null, DefaultValues.CompanionObjectFuncFromReflection),
             Arguments.of(
@@ -127,7 +145,9 @@ private class UseDefaultValueCallTest {
             Arguments.of(Class::topLevelExtensionFunc, Class(), DefaultValues.TopLevelExtensionFunc),
             Class().let {
                 Arguments.of(
-                    it::topLevelExtensionFuncFromInstance, null, DefaultValues.TopLevelExtensionFuncFromInstance
+                    it::topLevelExtensionFuncFromInstance,
+                    null,
+                    DefaultValues.TopLevelExtensionFuncFromInstance
                 )
             },
             Class().let {
