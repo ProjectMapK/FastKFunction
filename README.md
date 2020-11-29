@@ -35,3 +35,27 @@ val result: Sample = fastKFunction.generateBucket()
         .apply { (0 until 5).forEach { this[it] = it + 1 }}
         .let { fastKFunction.callBy(it) }
 ```
+
+## Installation
+TODO
+
+## How to use FastKFunction.
+
+### Instance parameter.
+If you call an instance function, you can expect a faster call with `instance parameter`.
+
+```kotlin
+data class Sample(
+    val arg1: Int,
+    val arg2: Int
+) {
+    fun instanceFun(arg3: Int): Int = arg1 + arg2 + arg3
+}
+
+val sample = Sample(1, 2)
+
+val fastKFunction = FastKFunction(sample::instanceFun, sample)
+```
+
+Depending on how you get the `KFunction`, the `instance parameter` may be required.
+Even if the `instance parameter` is not required, passing an `instance parameter` will make the call faster.
