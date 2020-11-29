@@ -1,6 +1,5 @@
-package com.mapk.fastkfunction.argumentBucket
+package com.mapk.fastkfunction.argumentbucket
 
-import com.mapk.fastkfunction.argumentbucket.BucketGenerator
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

@@ -1,7 +1,5 @@
-package com.mapk.fastkfunction.argumentBucket
+package com.mapk.fastkfunction.argumentbucket
 
-import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
-import com.mapk.fastkfunction.argumentbucket.BucketGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
