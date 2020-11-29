@@ -55,3 +55,11 @@ tasks {
         finalizedBy(jacocoTestReport)
     }
 }
+
+jmh {
+    fork = 3
+    iterations = 3
+    threads = 3
+    warmupBatchSize = 3
+    warmupIterations = 3
+}
