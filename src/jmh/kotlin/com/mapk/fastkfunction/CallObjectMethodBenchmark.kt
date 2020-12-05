@@ -27,14 +27,14 @@ open class CallObjectMethodBenchmark {
     private val javaMethod: Method = functionByMethodReference.javaMethod!!
 
     private val fastKFunctionByMethodReferenceWithoutInstance: FastKFunction<Constructor5> =
-        FastKFunction(functionByMethodReference)
+        FastKFunction.of(functionByMethodReference)
     private val fastKFunctionByMethodReferenceWithInstance: FastKFunction<Constructor5> =
-        FastKFunction(functionByMethodReference, objectInstance)
+        FastKFunction.of(functionByMethodReference, objectInstance)
 
     private val fastKFunctionByReflectionWithoutInstance: FastKFunction<Constructor5> =
-        FastKFunction(functionByReflection)
+        FastKFunction.of(functionByReflection)
     private val fastKFunctionByReflectionWithInstance: FastKFunction<Constructor5> =
-        FastKFunction(functionByReflection, objectInstance)
+        FastKFunction.of(functionByReflection, objectInstance)
 
     private val argumentBucket: ArgumentBucket = fastKFunctionByMethodReferenceWithoutInstance.generateBucket()
         .apply { (0 until 5).forEach { this[it] = it + 1 } }

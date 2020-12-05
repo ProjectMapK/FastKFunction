@@ -49,7 +49,7 @@ private class FullInitializedCallTest {
     @ParameterizedTest
     @MethodSource("argumentsProvider")
     fun callByArgumentBucket(target: KFunction<Dst>, instance: Any?, message: String) {
-        val sut = FastKFunction(target, instance)
+        val sut = FastKFunction.of(target, instance)
         val bucket = sut.generateBucket().apply {
             val params = target.parameters.filter { it.kind == KParameter.Kind.VALUE }
 
@@ -65,7 +65,7 @@ private class FullInitializedCallTest {
     @ParameterizedTest
     @MethodSource("argumentsProvider")
     fun callByCollection(target: KFunction<Dst>, instance: Any?, message: String) {
-        val sut = FastKFunction(target, instance)
+        val sut = FastKFunction.of(target, instance)
         assertDoesNotThrow("Fail $message") {
             assertEquals(Dst(100, "txt"), sut.callByCollection(listOf(100, "txt")), message)
         }
@@ -74,7 +74,7 @@ private class FullInitializedCallTest {
     @ParameterizedTest
     @MethodSource("argumentsProvider")
     fun callByVarargs(target: KFunction<Dst>, instance: Any?, message: String) {
-        val sut = FastKFunction(target, instance)
+        val sut = FastKFunction.of(target, instance)
         assertDoesNotThrow("Fail $message") {
             assertEquals(Dst(100, "txt"), sut.call(100, "txt"), message)
         }

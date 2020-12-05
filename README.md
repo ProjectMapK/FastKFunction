@@ -22,7 +22,7 @@ data class Sample(
 
 val function: KFunction<Sample> = ::Sample
 
-val fastKFunction: FastKFunction<Sample> = FastKFunction(function)
+val fastKFunction: FastKFunction<Sample> = FastKFunction.of(function)
 
 // call by vararg
 val result: Sample = fastKFunction.call(1, 2, 3, 4, 5)
@@ -58,7 +58,7 @@ data class Sample(
 
 val sample = Sample(1, 2)
 
-val fastKFunction = FastKFunction(sample::instanceFun, sample)
+val fastKFunction = FastKFunction.of(sample::instanceFun, sample)
 ```
 
 Depending on how you get the `KFunction`, the `instance parameter` may be required.
@@ -72,7 +72,7 @@ Calling with `vararg` or `Collection` is faster if you don't need to use the def
  can get them in the order in which they are defined.
 
 ```kotlin
-val fastKFunction: FastKFunction<Sample> = FastKFunction(function)
+val fastKFunction: FastKFunction<Sample> = FastKFunction.of(function)
 
 // call by vararg
 val result: Sample = fastKFunction.call(1, 2, 3, 4, 5)
@@ -93,7 +93,7 @@ data class Sample(
     val arg3: String? = null
 )
 
-private val fastKFunction: FastKFunction<Sample> = FastKFunction(::Sample)
+private val fastKFunction: FastKFunction<Sample> = FastKFunction.of(::Sample)
 
 fun map(src: Map<String, Any?>): Sample {
     return fastKFunction.generateBucket()

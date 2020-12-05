@@ -17,7 +17,7 @@ open class CallTopLevelFunBenchmark {
     private val argumentMap: Map<KParameter, Any?> = function.parameters.associateWith { it.index + 1 }
 
     private val javaMethod: Method = function.javaMethod!!
-    private val fastKFunction: FastKFunction<Constructor5> = FastKFunction(function, null)
+    private val fastKFunction: FastKFunction<Constructor5> = FastKFunction.of(function, null)
     private val argumentBucket: ArgumentBucket = fastKFunction.generateBucket()
         .apply { (0 until 5).forEach { this[it] = it + 1 } }
 
