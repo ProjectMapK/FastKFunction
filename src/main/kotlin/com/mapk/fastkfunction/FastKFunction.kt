@@ -90,14 +90,20 @@ class FastKFunction<T>(private val function: KFunction<T>, instance: Any? = null
                             getInstanceMethodCall(method, instance)
                         }
                     } else {
-                        try {
-                            // 定義先がobjectであればインスタンスを利用した呼び出しを行い、そうでなければ普通に呼び出す
-                            method.declaringObject
-                                ?.let { instanceFromClass -> getInstanceMethodCall(method, instanceFromClass) }
-                                ?: getFunctionCall(function)
-                        } catch (e: UnsupportedOperationException) {
-                            // トップレベル関数でobjectInstanceを取得しようとするとUnsupportedOperationExceptionになるためtryする
-                            getFunctionCall(function)
+                        // staticメソッドかつ引数の数がKFunctionの引数の数と変わらない場合はトップレベル関数（= 実体はstatic関数）
+                        if (Modifier.isStatic(method.modifiers) && parameters.size == method.parameters.size) {
+                            @Suppress("UNCHECKED_CAST")
+                            { method.invoke(null, *it) as T }
+                        } else {
+                            try {
+                                // 定義先がobjectであればインスタンスを利用した呼び出しを行い、そうでなければ普通に呼び出す
+                                method.declaringObject
+                                    ?.let { instanceFromClass -> getInstanceMethodCall(method, instanceFromClass) }
+                                    ?: getFunctionCall(function)
+                            } catch (e: UnsupportedOperationException) {
+                                // トップレベル関数でobjectInstanceを取得しようとするとUnsupportedOperationExceptionになるためtryする
+                                getFunctionCall(function)
+                            }
                         }
                     }
                 }
