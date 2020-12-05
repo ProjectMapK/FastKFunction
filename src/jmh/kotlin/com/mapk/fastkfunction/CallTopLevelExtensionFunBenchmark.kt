@@ -23,11 +23,12 @@ open class CallTopLevelExtensionFunBenchmark {
     private val javaMethod: Method = functionByMethodReference.javaMethod!!
 
     private val fastKFunctionByMethodReferenceWithoutInstance: FastKFunction<Constructor5> =
-        FastKFunction(functionByMethodReference)
+        FastKFunction.of(functionByMethodReference)
     private val fastKFunctionByMethodReferenceWithInstance: FastKFunction<Constructor5> =
-        FastKFunction(functionByMethodReference, receiverInstance)
+        FastKFunction.of(functionByMethodReference, receiverInstance)
 
-    private val fastKFunctionFromClass: FastKFunction<Constructor5> = FastKFunction(functionFromClass, receiverInstance)
+    private val fastKFunctionFromClass: FastKFunction<Constructor5> =
+        FastKFunction.of(functionFromClass, receiverInstance)
 
     private val argumentBucket: ArgumentBucket = fastKFunctionByMethodReferenceWithoutInstance.generateBucket()
         .apply { (0 until 5).forEach { this[it] = it + 1 } }

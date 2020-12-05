@@ -17,8 +17,8 @@ open class CallInstanceMethodBenchmark {
     private val argumentMap: Map<KParameter, Any?> = function.parameters.associateWith { it.index + 1 }
 
     private val javaMethod: Method = function.javaMethod!!
-    private val fastKFunctionWithoutInstance: FastKFunction<Constructor5> = FastKFunction(function, null)
-    private val fastKFunctionWithInstance: FastKFunction<Constructor5> = FastKFunction(function, instance)
+    private val fastKFunctionWithoutInstance: FastKFunction<Constructor5> = FastKFunction.of(function, null)
+    private val fastKFunctionWithInstance: FastKFunction<Constructor5> = FastKFunction.of(function, instance)
     private val argumentBucket: ArgumentBucket = fastKFunctionWithoutInstance.generateBucket()
         .apply { (0 until 5).forEach { this[it] = it + 1 } }
 
