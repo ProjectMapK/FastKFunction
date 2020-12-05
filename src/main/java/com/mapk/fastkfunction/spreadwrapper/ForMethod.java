@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class ForMethod {
+public class ForMethod implements SpreadWrapper<Object> {
     private final Method method;
     private final Object instance;
 
@@ -15,6 +15,7 @@ public class ForMethod {
         this.instance = instance;
     }
 
+    @Override
     public Object call(Object[] args) throws InvocationTargetException, IllegalAccessException {
         return method.invoke(instance, args);
     }
