@@ -2,6 +2,7 @@ package com.mapk.fastkfunction
 
 import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
 import com.mapk.fastkfunction.argumentbucket.BucketGenerator
+import com.mapk.fastkfunction.spreadwrapper.ForConstructor
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
@@ -22,20 +23,21 @@ sealed class FastKFunction<T> {
 
     internal class Constructor<T>(
         private val function: KFunction<T>,
-        private val constructor: JavaConstructor<T>,
+        constructor: JavaConstructor<T>,
         override val valueParameters: List<KParameter>
     ) : FastKFunction<T>() {
+        private val spreadWrapper = ForConstructor(constructor)
         override val bucketGenerator = BucketGenerator(valueParameters, null)
 
         override fun callBy(bucket: ArgumentBucket): T = if (bucket.isFullInitialized()) {
-            constructor.newInstance(*bucket.getValueArray())
+            spreadWrapper.call(bucket.getValueArray())
         } else {
             function.callBy(bucket)
         }
 
-        override fun callByCollection(args: Collection<Any?>): T = constructor.newInstance(*args.toTypedArray())
+        override fun callByCollection(args: Collection<Any?>): T = spreadWrapper.call(args.toTypedArray())
 
-        override fun call(vararg args: Any?): T = constructor.newInstance(*args)
+        override fun call(vararg args: Any?): T = spreadWrapper.call(args)
     }
 
     internal class Function<T>(
