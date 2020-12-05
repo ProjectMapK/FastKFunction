@@ -4,12 +4,12 @@ import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
 import com.mapk.fastkfunction.argumentbucket.BucketGenerator
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-import java.lang.reflect.Constructor as JavaConstructor
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
+import java.lang.reflect.Constructor as JavaConstructor
 
 sealed class FastKFunction<T> {
     abstract val valueParameters: List<KParameter>
@@ -129,7 +129,10 @@ sealed class FastKFunction<T> {
         }
 
         private fun <T> topLevelFunctionOf(
-            function: KFunction<T>, instance: Any?, parameters: List<KParameter>, method: Method
+            function: KFunction<T>,
+            instance: Any?,
+            parameters: List<KParameter>,
+            method: Method
         ): FastKFunction<T> = when {
             // KParameter.Kind.EXTENSION_RECEIVERの要求が有れば確定で拡張関数
             parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER -> {
@@ -145,19 +148,23 @@ sealed class FastKFunction<T> {
             }
             // javaMethodのパラメータサイズとKFunctionのパラメータサイズが違う場合も拡張関数
             // インスタンスが設定されていれば高速呼び出し、そうじゃなければ通常の関数呼び出し
-            method.parameters.size != parameters.size -> instance
-                ?.let {
-                    val generator = BucketGenerator(parameters, instance)
-                    val valueParameters = parameters.subList(1, parameters.size)
+            method.parameters.size != parameters.size ->
+                instance
+                    ?.let {
+                        val generator = BucketGenerator(parameters, instance)
+                        val valueParameters = parameters.subList(1, parameters.size)
 
-                    TopLevelExtensionFunction(function, method, instance, generator, valueParameters)
-                } ?: Function(function, parameters)
+                        TopLevelExtensionFunction(function, method, instance, generator, valueParameters)
+                    } ?: Function(function, parameters)
             // トップレベル関数
             else -> TopLevelFunction(function, method, parameters)
         }
 
         private fun <T> instanceFunctionOf(
-            function: KFunction<T>, inputtedInstance: Any?, parameters: List<KParameter>, method: Method
+            function: KFunction<T>,
+            inputtedInstance: Any?,
+            parameters: List<KParameter>,
+            method: Method
         ): FastKFunction<T> {
             val instance = inputtedInstance ?: method.declaringObject
 
