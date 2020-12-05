@@ -3,6 +3,7 @@ package com.mapk.fastkfunction
 import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
 import com.mapk.fastkfunction.argumentbucket.BucketGenerator
 import com.mapk.fastkfunction.spreadwrapper.ForConstructor
+import com.mapk.fastkfunction.spreadwrapper.ForKFunction
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
@@ -44,17 +45,18 @@ sealed class FastKFunction<T> {
         private val function: KFunction<T>,
         override val valueParameters: List<KParameter>
     ) : FastKFunction<T>() {
+        private val spreadWrapper = ForKFunction(function)
         override val bucketGenerator = BucketGenerator(valueParameters, null)
 
         override fun callBy(bucket: ArgumentBucket): T = if (bucket.isFullInitialized()) {
-            function.call(*bucket.getValueArray())
+            spreadWrapper.call(bucket.getValueArray())
         } else {
             function.callBy(bucket)
         }
 
-        override fun callByCollection(args: Collection<Any?>): T = function.call(*args.toTypedArray())
+        override fun callByCollection(args: Collection<Any?>): T = spreadWrapper.call(args.toTypedArray())
 
-        override fun call(vararg args: Any?): T = function.call(*args)
+        override fun call(vararg args: Any?): T = spreadWrapper.call(args)
     }
 
     internal class TopLevelFunction<T>(
