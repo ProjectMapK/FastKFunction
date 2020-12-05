@@ -85,7 +85,7 @@ sealed class FastKFunction<T> {
     internal class TopLevelExtensionFunction<T>(
         private val function: KFunction<T>,
         private val method: Method,
-        private val extensionReceiver: Any?,
+        private val extensionReceiver: Any,
         override val bucketGenerator: BucketGenerator,
         override val valueParameters: List<KParameter>
     ) : FastKFunction<T>() {
