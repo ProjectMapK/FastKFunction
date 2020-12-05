@@ -82,6 +82,7 @@ sealed class FastKFunction<T> {
         override fun call(vararg args: Any?): T = spreadWrapper.call(args) as T
     }
 
+    // NOTE: トップレベル拡張関数に関してはスプレッド演算子抹消対応が難しい（Bucket関連を弄らなきゃ無理）ため、一旦手を付けていない
     internal class TopLevelExtensionFunction<T>(
         private val function: KFunction<T>,
         private val method: Method,
