@@ -104,3 +104,11 @@ fun map(src: Map<String, Any?>): Sample {
         }.let { fastKFunction.callBy(it) }
 }
 ```
+
+## Benchmark
+You can run the benchmark with the `./gradlew jmh`.  
+Please note that it will take about 2 hours in total if executed with the default settings.
+
+```bash
+./gradlew jmh
+```

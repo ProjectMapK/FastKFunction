@@ -1,8 +1,10 @@
 plugins {
     id("maven")
     kotlin("jvm") version "1.4.20"
+    // プロダクションコード以外
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
     id("jacoco")
+    id("me.champeau.gradle.jmh") version "0.5.2"
 }
 
 group = "com.mapk"
@@ -20,6 +22,8 @@ dependencies {
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.7.0") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
+
+    implementation(group = "org.openjdk.jmh", name = "jmh-core", version = "1.26")
 }
 
 tasks {
@@ -34,6 +38,10 @@ tasks {
             jvmTarget = "1.8"
         }
     }
+    // https://qiita.com/wrongwrong/items/16fa10a7f78a31830ed8
+    jmhJar {
+        exclude("META-INF/versions/9/module-info.class")
+    }
     jacocoTestReport {
         reports {
             xml.isEnabled = true
@@ -46,4 +54,12 @@ tasks {
         // テスト終了時にjacocoのレポートを生成する
         finalizedBy(jacocoTestReport)
     }
+}
+
+jmh {
+    fork = 3
+    iterations = 3
+    threads = 3
+    warmupBatchSize = 3
+    warmupIterations = 3
 }
