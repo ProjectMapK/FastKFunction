@@ -107,7 +107,7 @@ private class UseDefaultValueCallTest {
     @ParameterizedTest
     @MethodSource("argumentsProvider")
     fun test(target: KFunction<Dst>, instance: Any?, default: DefaultValues) {
-        val sut = FastKFunction(target, instance)
+        val sut = FastKFunction.of(target, instance)
         val bucket = sut.generateBucket().apply {
             val params = target.parameters.filter { it.kind == KParameter.Kind.VALUE && !it.isOptional }
 
