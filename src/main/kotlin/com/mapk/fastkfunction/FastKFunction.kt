@@ -131,30 +131,30 @@ sealed class FastKFunction<T> {
         private fun <T> topLevelFunctionOf(
             function: KFunction<T>, instance: Any?, parameters: List<KParameter>, method: Method
         ): FastKFunction<T> {
-            return if (parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER) {
-                // KParameter.Kind.EXTENSION_RECEIVERの要求が有れば確定で拡張関数
-                // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
-                instance ?: throw IllegalArgumentException(
-                    "Function requires EXTENSION_RECEIVER instance, but is not present."
-                )
+            return when {
+                parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER -> {
+                    // KParameter.Kind.EXTENSION_RECEIVERの要求が有れば確定で拡張関数
+                    // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
+                    instance ?: throw IllegalArgumentException(
+                        "Function requires EXTENSION_RECEIVER instance, but is not present."
+                    )
 
-                val generator = BucketGenerator(parameters, instance)
-                val valueParameters = parameters.subList(1, parameters.size)
+                    val generator = BucketGenerator(parameters, instance)
+                    val valueParameters = parameters.subList(1, parameters.size)
 
-                TopLevelExtensionFunction(function, method, instance, generator, valueParameters)
-            } else if (method.parameters.size != parameters.size) {
+                    TopLevelExtensionFunction(function, method, instance, generator, valueParameters)
+                }
                 // javaMethodのパラメータサイズとKFunctionのパラメータサイズが違う場合も拡張関数
                 // インスタンスが設定されていれば高速呼び出し、そうじゃなければ通常の関数呼び出し
-                instance
+                method.parameters.size != parameters.size -> instance
                     ?.let {
                         val generator = BucketGenerator(parameters, instance)
                         val valueParameters = parameters.subList(1, parameters.size)
 
                         TopLevelExtensionFunction(function, method, instance, generator, valueParameters)
                     } ?: Function(function, parameters)
-            } else {
                 // トップレベル関数
-                TopLevelFunction(function, method, parameters)
+                else -> TopLevelFunction(function, method, parameters)
             }
         }
 
