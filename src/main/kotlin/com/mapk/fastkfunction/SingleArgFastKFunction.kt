@@ -16,21 +16,21 @@ sealed class SingleArgFastKFunction<T> {
     internal class Constructor<T>(
         override val valueParameter: KParameter,
         private val constructor: JavaConstructor<T>
-    ): SingleArgFastKFunction<T>() {
+    ) : SingleArgFastKFunction<T>() {
         override fun call(arg: Any?): T = constructor.newInstance(arg)
     }
 
     internal class Function<T>(
         override val valueParameter: KParameter,
         private val function: KFunction<T>
-    ): SingleArgFastKFunction<T>() {
+    ) : SingleArgFastKFunction<T>() {
         override fun call(arg: Any?): T = function.call(arg)
     }
 
     internal class TopLevelFunction<T>(
         override val valueParameter: KParameter,
         private val method: Method
-    ): SingleArgFastKFunction<T>() {
+    ) : SingleArgFastKFunction<T>() {
         @Suppress("UNCHECKED_CAST")
         override fun call(arg: Any?): T = method.invoke(null, arg) as T
     }
@@ -39,7 +39,7 @@ sealed class SingleArgFastKFunction<T> {
         override val valueParameter: KParameter,
         private val method: Method,
         private val extensionReceiver: Any
-    ): SingleArgFastKFunction<T>() {
+    ) : SingleArgFastKFunction<T>() {
         @Suppress("UNCHECKED_CAST")
         override fun call(arg: Any?): T = method.invoke(null, extensionReceiver, arg) as T
     }
@@ -48,7 +48,7 @@ sealed class SingleArgFastKFunction<T> {
         override val valueParameter: KParameter,
         private val method: Method,
         private val instance: Any
-    ): SingleArgFastKFunction<T>() {
+    ) : SingleArgFastKFunction<T>() {
         @Suppress("UNCHECKED_CAST")
         override fun call(arg: Any?): T = method.invoke(instance, arg) as T
     }
@@ -81,9 +81,10 @@ sealed class SingleArgFastKFunction<T> {
             }
             // javaMethodのパラメータサイズとKFunctionのパラメータサイズが違う場合も拡張関数
             // インスタンスが設定されていれば高速呼び出し、そうじゃなければ通常の関数呼び出し
-            method.parameters.size != parameters.size -> instance
-                ?.let { TopLevelExtensionFunction(parameters[0], method, instance) }
-                ?: Function(parameters[0], function)
+            method.parameters.size != parameters.size ->
+                instance
+                    ?.let { TopLevelExtensionFunction(parameters[0], method, instance) }
+                    ?: Function(parameters[0], function)
             // トップレベル関数
             else -> TopLevelFunction(parameters[0], method)
         }
@@ -97,9 +98,10 @@ sealed class SingleArgFastKFunction<T> {
             val instance = inputtedInstance ?: method.declaringObject
 
             return when {
-                parameters[0].kind == KParameter.Kind.INSTANCE -> instance
-                    ?.let { InstanceFunction(parameters[1], method, it) }
-                    ?: throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.")
+                parameters[0].kind == KParameter.Kind.INSTANCE ->
+                    instance
+                        ?.let { InstanceFunction(parameters[1], method, it) }
+                        ?: throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.")
                 instance != null -> InstanceFunction(parameters[0], method, instance)
                 else -> Function(parameters[0], function)
             }
