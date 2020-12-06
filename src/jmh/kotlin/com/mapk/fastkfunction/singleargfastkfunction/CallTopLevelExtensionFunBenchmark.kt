@@ -20,6 +20,12 @@ open class CallTopLevelExtensionFunBenchmark {
     private val functionFromClass: KFunction<Constructor1> = Constructor1::topLevelExtensionFun1
 
     private val argumentMap: Map<KParameter, Any?> = mapOf(functionByMethodReference.parameters.single() to argument)
+    private val argumentMapWithInstance: Map<KParameter, Any?> = functionFromClass.parameters.let {
+        mapOf(
+            it[0] to receiverInstance,
+            it[1] to argument
+        )
+    }
 
     private val javaMethod: Method = functionByMethodReference.javaMethod!!
 
@@ -49,10 +55,10 @@ open class CallTopLevelExtensionFunBenchmark {
     fun functionByMethodReferenceCallBy(): Constructor1 = functionByMethodReference.callBy(argumentMap)
 
     @Benchmark
-    fun functionFromClassCall(): Constructor1 = functionFromClass.call(argument)
+    fun functionFromClassCall(): Constructor1 = functionFromClass.call(receiverInstance, argument)
 
     @Benchmark
-    fun functionFromClassCallBy(): Constructor1 = functionFromClass.callBy(argumentMap)
+    fun functionFromClassCallBy(): Constructor1 = functionFromClass.callBy(argumentMapWithInstance)
 
     @Benchmark
     fun javaMethod(): Constructor1 = javaMethod.invoke(null, receiverInstance, argument) as Constructor1
