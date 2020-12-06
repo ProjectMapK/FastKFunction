@@ -1,4 +1,4 @@
-name: Lint, Test, and upload Coveradge with Gradle.
+name: Lint, Test, upload Coveradge.
 
 on:
   push:
