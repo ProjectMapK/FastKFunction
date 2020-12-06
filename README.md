@@ -105,6 +105,17 @@ fun map(src: Map<String, Any?>): Sample {
 }
 ```
 
+### For functions that can be called from a single argument.
+For a function that can be called with a single argument, you can use the `SingleArgFastKFunction`.
+
+```kotlin
+data class Sample(val arg: Int)
+
+val fastKFunction: SingleArgFastKFunction<Sample> = SingleArgFastKFunction.of(::Sample)
+
+val result: Sample = fastKFunction.call(1)
+```
+
 ## Benchmark
 You can run the benchmark with the `./gradlew jmh`.  
 Please note that it will take about 2 hours in total if executed with the default settings.
