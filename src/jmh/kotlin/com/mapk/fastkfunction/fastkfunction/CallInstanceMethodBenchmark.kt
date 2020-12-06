@@ -39,7 +39,8 @@ open class CallInstanceMethodBenchmark {
     fun fastKFunctionWithoutInstanceCall(): Constructor5 = fastKFunctionWithoutInstance.call(1, 2, 3, 4, 5)
 
     @Benchmark
-    fun fastKFunctionWithoutInstanceCallByCollection(): Constructor5 = fastKFunctionWithoutInstance.call(collection)
+    fun fastKFunctionWithoutInstanceCallByCollection(): Constructor5 =
+        fastKFunctionWithoutInstance.callByCollection(collection)
 
     @Benchmark
     fun fastKFunctionWithoutInstanceCallBy(): Constructor5 = fastKFunctionWithoutInstance.callBy(argumentBucket)
