@@ -54,11 +54,13 @@ sealed class SingleArgFastKFunction<T> {
     }
 
     companion object {
-        private fun List<KParameter>.checkParameters(instance: Any?) = also {
-            if (isEmpty() || (instance != null && size == 1))
+        private fun List<KParameter>.checkParameters() = also {
+            val requireInstanceParameter = this[0].kind != KParameter.Kind.VALUE
+
+            if (isEmpty() || (requireInstanceParameter && size == 1))
                 throw IllegalArgumentException("This function is not require arguments.")
 
-            if (!(this.size == 1 || (this.size == 2 && instance != null)))
+            if (!(this.size == 1 || (this.size == 2 && requireInstanceParameter)))
                 throw IllegalArgumentException("This function is require multiple arguments.")
         }
 
@@ -105,7 +107,7 @@ sealed class SingleArgFastKFunction<T> {
 
         fun <T> of(function: KFunction<T>, instance: Any? = null): SingleArgFastKFunction<T> {
             // 引数を要求しないか、複数のインスタンスを求める場合エラーとする
-            val parameters: List<KParameter> = function.parameters.checkParameters(instance)
+            val parameters: List<KParameter> = function.parameters.checkParameters()
 
             // この関数には確実にアクセスするためアクセシビリティ書き換え
             function.isAccessible = true
