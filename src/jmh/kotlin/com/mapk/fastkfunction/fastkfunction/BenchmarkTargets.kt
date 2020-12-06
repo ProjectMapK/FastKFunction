@@ -1,4 +1,4 @@
-package com.mapk.fastkfunction.benchmarktargets
+package com.mapk.fastkfunction.fastkfunction
 
 data class Constructor5(
     val arg1: Int,

@@ -1,7 +1,7 @@
-package com.mapk.fastkfunction
+package com.mapk.fastkfunction.fastkfunction
 
+import com.mapk.fastkfunction.FastKFunction
 import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
-import com.mapk.fastkfunction.benchmarktargets.Constructor5
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.State
@@ -17,6 +17,7 @@ open class CallConstructorBenchmark {
 
     private val javaConstructor: Constructor<Constructor5> = function.javaConstructor!!
     private val fastKFunction: FastKFunction<Constructor5> = FastKFunction.of(function, null)
+    private val collection: Collection<Int> = listOf(1, 2, 3, 4, 5)
     private val argumentBucket: ArgumentBucket = fastKFunction.generateBucket()
         .apply { (0 until 5).forEach { this[it] = it + 1 } }
 
@@ -34,6 +35,9 @@ open class CallConstructorBenchmark {
 
     @Benchmark
     fun fastKFunctionCall(): Constructor5 = fastKFunction.call(1, 2, 3, 4, 5)
+
+    @Benchmark
+    fun fastKFunctionCallByCollection(): Constructor5 = fastKFunction.callByCollection(collection)
 
     @Benchmark
     fun fastKFunctionCallBy(): Constructor5 = fastKFunction.callBy(argumentBucket)

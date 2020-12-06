@@ -1,7 +1,7 @@
-package com.mapk.fastkfunction
+package com.mapk.fastkfunction.fastkfunction
 
+import com.mapk.fastkfunction.FastKFunction
 import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
-import com.mapk.fastkfunction.benchmarktargets.Constructor5
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.State
@@ -19,6 +19,7 @@ open class CallInstanceMethodBenchmark {
     private val javaMethod: Method = function.javaMethod!!
     private val fastKFunctionWithoutInstance: FastKFunction<Constructor5> = FastKFunction.of(function, null)
     private val fastKFunctionWithInstance: FastKFunction<Constructor5> = FastKFunction.of(function, instance)
+    private val collection: Collection<Int> = listOf(1, 2, 3, 4, 5)
     private val argumentBucket: ArgumentBucket = fastKFunctionWithoutInstance.generateBucket()
         .apply { (0 until 5).forEach { this[it] = it + 1 } }
 
@@ -38,10 +39,17 @@ open class CallInstanceMethodBenchmark {
     fun fastKFunctionWithoutInstanceCall(): Constructor5 = fastKFunctionWithoutInstance.call(1, 2, 3, 4, 5)
 
     @Benchmark
+    fun fastKFunctionWithoutInstanceCallByCollection(): Constructor5 = fastKFunctionWithoutInstance.call(collection)
+
+    @Benchmark
     fun fastKFunctionWithoutInstanceCallBy(): Constructor5 = fastKFunctionWithoutInstance.callBy(argumentBucket)
 
     @Benchmark
     fun fastKFunctionWithInstanceCall(): Constructor5 = fastKFunctionWithInstance.call(1, 2, 3, 4, 5)
+
+    @Benchmark
+    fun fastKFunctionWithInstanceCallByCollection(): Constructor5 =
+        fastKFunctionWithInstance.callByCollection(collection)
 
     @Benchmark
     fun fastKFunctionWithInstanceCallBy(): Constructor5 = fastKFunctionWithInstance.callBy(argumentBucket)

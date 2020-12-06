@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.functions
@@ -109,7 +108,7 @@ private class UseDefaultValueCallTest {
     fun test(target: KFunction<Dst>, instance: Any?, default: DefaultValues) {
         val sut = FastKFunction.of(target, instance)
         val bucket = sut.generateBucket().apply {
-            val params = target.parameters.filter { it.kind == KParameter.Kind.VALUE && !it.isOptional }
+            val params = sut.valueParameters
 
             set(params[0], 100)
             set(params[1], "txt")

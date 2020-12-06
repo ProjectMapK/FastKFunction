@@ -160,10 +160,8 @@ sealed class FastKFunction<T> {
             method.parameters.size != parameters.size ->
                 instance
                     ?.let {
-                        val generator = BucketGenerator(parameters, instance)
-                        val valueParameters = parameters.subList(1, parameters.size)
-
-                        TopLevelExtensionFunction(function, method, instance, generator, valueParameters)
+                        // KFunctionとしては値パラメータを求めていないため、バケツにはインスタンスを設定しない
+                        TopLevelExtensionFunction(function, method, it, BucketGenerator(parameters, null), parameters)
                     } ?: Function(function, parameters)
             // トップレベル関数
             else -> TopLevelFunction(function, method, parameters)
@@ -186,9 +184,8 @@ sealed class FastKFunction<T> {
                 InstanceFunction(function, method, instance, generator, valueParameters)
             } else {
                 instance
-                    ?.let {
-                        InstanceFunction(function, method, instance, BucketGenerator(parameters, null), parameters)
-                    } ?: Function(function, parameters)
+                    ?.let { InstanceFunction(function, method, it, BucketGenerator(parameters, null), parameters) }
+                    ?: Function(function, parameters)
             }
         }
 
