@@ -2,6 +2,9 @@ package com.mapk.fastkfunction
 
 import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
 import com.mapk.fastkfunction.argumentbucket.BucketGenerator
+import com.mapk.fastkfunction.spreadwrapper.ForConstructor
+import com.mapk.fastkfunction.spreadwrapper.ForKFunction
+import com.mapk.fastkfunction.spreadwrapper.ForMethod
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
@@ -22,64 +25,68 @@ sealed class FastKFunction<T> {
 
     internal class Constructor<T>(
         private val function: KFunction<T>,
-        private val constructor: JavaConstructor<T>,
+        constructor: JavaConstructor<T>,
         override val valueParameters: List<KParameter>
     ) : FastKFunction<T>() {
+        private val spreadWrapper = ForConstructor(constructor)
         override val bucketGenerator = BucketGenerator(valueParameters, null)
 
         override fun callBy(bucket: ArgumentBucket): T = if (bucket.isFullInitialized()) {
-            constructor.newInstance(*bucket.getValueArray())
+            spreadWrapper.call(bucket.getValueArray())
         } else {
             function.callBy(bucket)
         }
 
-        override fun callByCollection(args: Collection<Any?>): T = constructor.newInstance(*args.toTypedArray())
+        override fun callByCollection(args: Collection<Any?>): T = spreadWrapper.call(args.toTypedArray())
 
-        override fun call(vararg args: Any?): T = constructor.newInstance(*args)
+        override fun call(vararg args: Any?): T = spreadWrapper.call(args)
     }
 
     internal class Function<T>(
         private val function: KFunction<T>,
         override val valueParameters: List<KParameter>
     ) : FastKFunction<T>() {
+        private val spreadWrapper = ForKFunction(function)
         override val bucketGenerator = BucketGenerator(valueParameters, null)
 
         override fun callBy(bucket: ArgumentBucket): T = if (bucket.isFullInitialized()) {
-            function.call(*bucket.getValueArray())
+            spreadWrapper.call(bucket.getValueArray())
         } else {
             function.callBy(bucket)
         }
 
-        override fun callByCollection(args: Collection<Any?>): T = function.call(*args.toTypedArray())
+        override fun callByCollection(args: Collection<Any?>): T = spreadWrapper.call(args.toTypedArray())
 
-        override fun call(vararg args: Any?): T = function.call(*args)
+        override fun call(vararg args: Any?): T = spreadWrapper.call(args)
     }
 
     internal class TopLevelFunction<T>(
         private val function: KFunction<T>,
-        private val method: Method,
+        method: Method,
         override val valueParameters: List<KParameter>
     ) : FastKFunction<T>() {
+        private val spreadWrapper = ForMethod(method, null)
         override val bucketGenerator = BucketGenerator(valueParameters, null)
 
         @Suppress("UNCHECKED_CAST")
         override fun callBy(bucket: ArgumentBucket): T = if (bucket.isFullInitialized()) {
-            method.invoke(null, *bucket.getValueArray()) as T
+            spreadWrapper.call(bucket.getValueArray()) as T
         } else {
             function.callBy(bucket)
         }
 
         @Suppress("UNCHECKED_CAST")
-        override fun callByCollection(args: Collection<Any?>): T = method.invoke(null, *args.toTypedArray()) as T
+        override fun callByCollection(args: Collection<Any?>): T = spreadWrapper.call(args.toTypedArray()) as T
 
         @Suppress("UNCHECKED_CAST")
-        override fun call(vararg args: Any?): T = method.invoke(null, *args) as T
+        override fun call(vararg args: Any?): T = spreadWrapper.call(args) as T
     }
 
+    // NOTE: トップレベル拡張関数に関してはスプレッド演算子抹消対応が難しい（Bucket関連を弄らなきゃ無理）ため、一旦手を付けていない
     internal class TopLevelExtensionFunction<T>(
         private val function: KFunction<T>,
         private val method: Method,
-        private val extensionReceiver: Any?,
+        private val extensionReceiver: Any,
         override val bucketGenerator: BucketGenerator,
         override val valueParameters: List<KParameter>
     ) : FastKFunction<T>() {
@@ -100,23 +107,25 @@ sealed class FastKFunction<T> {
 
     internal class InstanceFunction<T>(
         private val function: KFunction<T>,
-        private val method: Method,
-        private val instance: Any,
+        method: Method,
+        instance: Any,
         override val bucketGenerator: BucketGenerator,
         override val valueParameters: List<KParameter>
     ) : FastKFunction<T>() {
+        private val spreadWrapper = ForMethod(method, instance)
+
         @Suppress("UNCHECKED_CAST")
         override fun callBy(bucket: ArgumentBucket): T = if (bucket.isFullInitialized()) {
-            method.invoke(instance, *bucket.getValueArray()) as T
+            spreadWrapper.call(bucket.getValueArray()) as T
         } else {
             function.callBy(bucket)
         }
 
         @Suppress("UNCHECKED_CAST")
-        override fun callByCollection(args: Collection<Any?>): T = method.invoke(instance, *args.toTypedArray()) as T
+        override fun callByCollection(args: Collection<Any?>): T = spreadWrapper.call(args.toTypedArray()) as T
 
         @Suppress("UNCHECKED_CAST")
-        override fun call(vararg args: Any?): T = method.invoke(instance, *args) as T
+        override fun call(vararg args: Any?): T = spreadWrapper.call(args) as T
     }
 
     companion object {

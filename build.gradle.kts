@@ -62,4 +62,6 @@ jmh {
     threads = 3
     warmupBatchSize = 3
     warmupIterations = 3
+
+    resultFormat = "CSV"
 }
