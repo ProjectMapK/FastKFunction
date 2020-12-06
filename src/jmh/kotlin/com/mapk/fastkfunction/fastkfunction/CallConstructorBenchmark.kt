@@ -2,7 +2,6 @@ package com.mapk.fastkfunction.fastkfunction
 
 import com.mapk.fastkfunction.FastKFunction
 import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
-import com.mapk.fastkfunction.benchmarktargets.Constructor5
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.State
