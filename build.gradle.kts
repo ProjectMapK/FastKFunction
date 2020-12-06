@@ -63,5 +63,8 @@ jmh {
     warmupBatchSize = 3
     warmupIterations = 3
 
+    failOnError = true
+    isIncludeTests = false
+
     resultFormat = "CSV"
 }
