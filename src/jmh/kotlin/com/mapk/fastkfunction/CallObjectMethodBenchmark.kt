@@ -36,6 +36,7 @@ open class CallObjectMethodBenchmark {
     private val fastKFunctionByReflectionWithInstance: FastKFunction<Constructor5> =
         FastKFunction.of(functionByReflection, objectInstance)
 
+    private val collection: Collection<Int> = listOf(1, 2, 3, 4, 5)
     private val argumentBucket: ArgumentBucket = fastKFunctionByMethodReferenceWithoutInstance.generateBucket()
         .apply { (0 until 5).forEach { this[it] = it + 1 } }
 
@@ -62,12 +63,20 @@ open class CallObjectMethodBenchmark {
         fastKFunctionByMethodReferenceWithoutInstance.call(1, 2, 3, 4, 5)
 
     @Benchmark
+    fun fastKFunctionByMethodReferenceWithoutInstanceCallByCollection(): Constructor5 =
+        fastKFunctionByMethodReferenceWithoutInstance.callByCollection(collection)
+
+    @Benchmark
     fun fastKFunctionByMethodReferenceWithoutInstanceCallBy(): Constructor5 =
         fastKFunctionByMethodReferenceWithoutInstance.callBy(argumentBucket)
 
     @Benchmark
     fun fastKFunctionByMethodReferenceWithInstanceCall(): Constructor5 =
         fastKFunctionByMethodReferenceWithInstance.call(1, 2, 3, 4, 5)
+
+    @Benchmark
+    fun fastKFunctionByMethodReferenceWithInstanceCallByCollection(): Constructor5 =
+        fastKFunctionByMethodReferenceWithInstance.callByCollection(collection)
 
     @Benchmark
     fun fastKFunctionByMethodReferenceWithInstanceCallBy(): Constructor5 =
@@ -78,12 +87,20 @@ open class CallObjectMethodBenchmark {
         fastKFunctionByReflectionWithoutInstance.call(1, 2, 3, 4, 5)
 
     @Benchmark
+    fun fastKFunctionByReflectionWithoutInstanceCallByCollection(): Constructor5 =
+        fastKFunctionByReflectionWithoutInstance.callByCollection(collection)
+
+    @Benchmark
     fun fastKFunctionByReflectionWithoutInstanceCallBy(): Constructor5 =
         fastKFunctionByReflectionWithoutInstance.callBy(argumentBucket)
 
     @Benchmark
     fun fastKFunctionByReflectionWithInstanceCall(): Constructor5 =
         fastKFunctionByReflectionWithInstance.call(1, 2, 3, 4, 5)
+
+    @Benchmark
+    fun fastKFunctionByReflectionWithInstanceCallByCollection(): Constructor5 =
+        fastKFunctionByReflectionWithInstance.callByCollection(collection)
 
     @Benchmark
     fun fastKFunctionByReflectionWithInstanceCallBy(): Constructor5 =
