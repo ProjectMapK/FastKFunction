@@ -22,7 +22,7 @@ open class CallObjectMethodBenchmark {
     @Suppress("UNCHECKED_CAST")
     private val functionByReflection: KFunction<Constructor1> = objectInstance::class
         .functions
-        .first { it.name == "companionObjectFun5" } as KFunction<Constructor1>
+        .first { it.name == "companionObjectFun1" } as KFunction<Constructor1>
 
     private val argumentMap: Map<KParameter, Any?> = mapOf(functionByMethodReference.parameters.single() to argument)
 
