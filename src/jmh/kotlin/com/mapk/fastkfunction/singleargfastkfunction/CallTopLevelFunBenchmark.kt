@@ -2,7 +2,6 @@ package com.mapk.fastkfunction.singleargfastkfunction
 
 import com.mapk.fastkfunction.FastKFunction
 import com.mapk.fastkfunction.SingleArgFastKFunction
-import com.mapk.fastkfunction.argumentbucket.ArgumentBucket
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.State
