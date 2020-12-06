@@ -93,7 +93,7 @@ data class Sample(
     val arg3: String? = null
 )
 
-private val fastKFunction: FastKFunction<Sample> = FastKFunction.of(::Sample)
+val fastKFunction: FastKFunction<Sample> = FastKFunction.of(::Sample)
 
 fun map(src: Map<String, Any?>): Sample {
     return fastKFunction.generateBucket()
