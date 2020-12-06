@@ -23,6 +23,9 @@ open class CallObjectMethodBenchmark {
         .first { it.name == "companionObjectFun5" } as KFunction<Constructor5>
 
     private val argumentMap: Map<KParameter, Any?> = functionByMethodReference.parameters.associateWith { it.index + 1 }
+    private val argumentMapWithInstance: Map<KParameter, Any?> = functionByReflection.parameters.associateWith {
+        if (it.kind == KParameter.Kind.INSTANCE) objectInstance else it.index + 1
+    }
 
     private val javaMethod: Method = functionByMethodReference.javaMethod!!
 
@@ -50,10 +53,10 @@ open class CallObjectMethodBenchmark {
     fun functionByMethodReferenceCallBy(): Constructor5 = functionByMethodReference.callBy(argumentMap)
 
     @Benchmark
-    fun functionByReflectionCall(): Constructor5 = functionByReflection.call(1, 2, 3, 4, 5)
+    fun functionByReflectionCall(): Constructor5 = functionByReflection.call(objectInstance, 1, 2, 3, 4, 5)
 
     @Benchmark
-    fun functionByReflectionCallBy(): Constructor5 = functionByReflection.callBy(argumentMap)
+    fun functionByReflectionCallBy(): Constructor5 = functionByReflection.callBy(argumentMapWithInstance)
 
     @Benchmark
     fun javaMethod(): Constructor5 = javaMethod.invoke(objectInstance, 1, 2, 3, 4, 5) as Constructor5
