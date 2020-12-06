@@ -39,8 +39,7 @@ open class CallTopLevelFunBenchmark {
     fun fastKFunctionCall(): Constructor5 = fastKFunction.call(1, 2, 3, 4, 5)
 
     @Benchmark
-    fun fastKFunctionCallByCollection(): Constructor5 =
-        fastKFunction.callByCollection(collection)
+    fun fastKFunctionCallByCollection(): Constructor5 = fastKFunction.callByCollection(collection)
 
     @Benchmark
     fun fastKFunctionCallBy(): Constructor5 = fastKFunction.callBy(argumentBucket)
