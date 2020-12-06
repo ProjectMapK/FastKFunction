@@ -96,12 +96,12 @@ sealed class SingleArgFastKFunction<T> {
         ): SingleArgFastKFunction<T> {
             val instance = inputtedInstance ?: method.declaringObject
 
-            return if (parameters[0].kind == KParameter.Kind.INSTANCE || instance != null) {
-                instance ?: throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.")
-
-                InstanceFunction(parameters[1], method, instance)
-            } else {
-                Function(parameters[0], function)
+            return when {
+                parameters[0].kind == KParameter.Kind.INSTANCE -> instance
+                    ?.let { InstanceFunction(parameters[1], method, it) }
+                    ?: throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.")
+                instance != null -> InstanceFunction(parameters[0], method, instance)
+                else -> Function(parameters[0], function)
             }
         }
 
