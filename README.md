@@ -93,7 +93,7 @@ data class Sample(
     val arg3: String? = null
 )
 
-private val fastKFunction: FastKFunction<Sample> = FastKFunction.of(::Sample)
+val fastKFunction: FastKFunction<Sample> = FastKFunction.of(::Sample)
 
 fun map(src: Map<String, Any?>): Sample {
     return fastKFunction.generateBucket()
@@ -103,6 +103,17 @@ fun map(src: Map<String, Any?>): Sample {
             }
         }.let { fastKFunction.callBy(it) }
 }
+```
+
+### For functions that can be called from a single argument.
+For a function that can be called with a single argument, you can use the `SingleArgFastKFunction`.
+
+```kotlin
+data class Sample(val arg: Int)
+
+val fastKFunction: SingleArgFastKFunction<Sample> = SingleArgFastKFunction.of(::Sample)
+
+val result: Sample = fastKFunction.call(1)
 ```
 
 ## Benchmark
