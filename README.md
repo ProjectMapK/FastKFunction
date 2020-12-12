@@ -36,6 +36,41 @@ val result: Sample = fastKFunction.generateBucket()
         .let { fastKFunction.callBy(it) }
 ```
 
+## How Fast?
+Calling the constructor is more than 1.2 times faster than calling `KFunction` with `call`,
+and more than 6 times faster than calling it with `callBy`.
+
+You can get the same speed as `reflection` in `Java`.
+
+|                       | ops/s       |Ratio|
+|-----------------------|------------:|-----|
+| Java Constructor      |`104267558.4`|`6.7`|
+| FastKFunction(call)   |`102948283.4`|`6.6`|
+| FastKFunction(callBy) |`105609306.2`|`6.8`|
+| KFunction(call)       | `77096714.2`|`5.0`|
+| KFunction(callBy)     | `15519730.2`|`1`  |
+
+![ConstructorBenchmarkResultGraph.png](./pictures/ConstructorBenchmarkResultGraph.png)
+
+*This is the score I got on a `Ryzen7 3700X` in a `Windows 10` environment, with [3b8687](https://github.com/ProjectMapK/FastKFunction/tree/3b8687da712319a49e4f58a38edbb016cc0c41b7) committed.
+
+### Raw data, and other comparisons
+You can get full benchmark score and some other graphs [here](https://docs.google.com/spreadsheets/d/1DJhf8KX1-BAxCGor5cZdlO3626AZbKeet-rkk26XGAE/).
+
+### Mechanism
+I have a blog post on the mechanism of fast invocation (in Japanese).
+
+- [【Kotlin】KFunctionを高速に呼び出す（前編） \- Qiita](https://qiita.com/wrongwrong/items/f7b15d54956191f471d1)
+- [【Kotlin】KFunctionを高速に呼び出す（後編） \- Qiita](https://qiita.com/wrongwrong/items/fe75bae3911eff319e68)
+
+### Benchmarking
+You can run the benchmark with the `./gradlew jmh`.  
+Please note that it will take about 5 hours in total if executed with the default settings.
+
+```bash
+./gradlew jmh
+```
+
 ## Installation
 `FastKFunction` is published on JitPack.
 You can use this library on `Maven`, `gradle` and any other build tools.
@@ -114,12 +149,4 @@ data class Sample(val arg: Int)
 val fastKFunction: SingleArgFastKFunction<Sample> = SingleArgFastKFunction.of(::Sample)
 
 val result: Sample = fastKFunction.call(1)
-```
-
-## Benchmark
-You can run the benchmark with the `./gradlew jmh`.  
-Please note that it will take about 2 hours in total if executed with the default settings.
-
-```bash
-./gradlew jmh
 ```
