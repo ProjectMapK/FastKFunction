@@ -1,6 +1,6 @@
 plugins {
     id("maven")
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.4.21"
     // プロダクションコード以外
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
     id("jacoco")
