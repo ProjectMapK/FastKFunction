@@ -38,10 +38,10 @@ val result: Sample = fastKFunction.generateBucket()
 
 ## Installation
 `FastKFunction` is published on JitPack.
-You can use this library on maven, gradle and any other build tools.
+You can use this library on `Maven`, `gradle` and any other build tools.
 Please see here for the introduction method.
 
-- [ProjectMapK / FastKFunction](https://jitpack.io/#ProjectMapK/FastKFunction) 
+- [ProjectMapK / FastKFunction](https://jitpack.io/#ProjectMapK/FastKFunction)
 
 ## How to use FastKFunction.
 
