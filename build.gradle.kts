@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.mapk"
-version = "0.1-alpha"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
