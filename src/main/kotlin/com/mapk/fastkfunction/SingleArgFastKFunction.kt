@@ -80,11 +80,9 @@ sealed class SingleArgFastKFunction<T> {
             // KParameter.Kind.EXTENSION_RECEIVERの要求が有れば確定で拡張関数
             parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER -> {
                 // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
-                instance ?: throw IllegalArgumentException(
-                    "Function requires EXTENSION_RECEIVER instance, but is not present."
+                TopLevelExtensionFunction(
+                    parameters[1], method, instance.instanceOrThrow(KParameter.Kind.EXTENSION_RECEIVER)
                 )
-
-                TopLevelExtensionFunction(parameters[1], method, instance)
             }
             // javaMethodのパラメータサイズとKFunctionのパラメータサイズが違う場合も拡張関数
             // インスタンスが設定されていれば高速呼び出し、そうじゃなければ通常の関数呼び出し
@@ -107,21 +105,19 @@ sealed class SingleArgFastKFunction<T> {
 
             return when {
                 parameters[0].kind == KParameter.Kind.INSTANCE ->
-                    instance
-                        ?.let {
-                            val instanceClazz = it::class
+                    instance.instanceOrThrow(KParameter.Kind.INSTANCE).let {
+                        val instanceClazz = it::class
 
-                            method.declaringClass.kotlin.also { requiredClazz ->
-                                if (!requiredClazz.isSuperclassOf(instanceClazz))
-                                    throw IllegalArgumentException(
-                                        "INSTANCE parameter required ${requiredClazz.simpleName}, " +
-                                                "but ${instanceClazz.simpleName} is present."
-                                    )
-                            }
-
-                            InstanceFunction(parameters[1], method, it)
+                        method.declaringClass.kotlin.also { requiredClazz ->
+                            if (!requiredClazz.isSuperclassOf(instanceClazz))
+                                throw IllegalArgumentException(
+                                    "INSTANCE parameter required ${requiredClazz.simpleName}, " +
+                                            "but ${instanceClazz.simpleName} is present."
+                                )
                         }
-                        ?: throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.")
+
+                        InstanceFunction(parameters[1], method, it)
+                    }
                 instance != null -> {
                     val instanceClazz = instance::class
 

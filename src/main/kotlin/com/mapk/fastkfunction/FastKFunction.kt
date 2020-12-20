@@ -151,14 +151,12 @@ sealed class FastKFunction<T> {
             // KParameter.Kind.EXTENSION_RECEIVERの要求が有れば確定で拡張関数
             parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER -> {
                 // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
-                instance ?: throw IllegalArgumentException(
-                    "Function requires EXTENSION_RECEIVER instance, but is not present."
-                )
+                instance.instanceOrThrow(KParameter.Kind.EXTENSION_RECEIVER).let {
+                    val generator = BucketGenerator(parameters, it)
+                    val valueParameters = parameters.subList(1, parameters.size)
 
-                val generator = BucketGenerator(parameters, instance)
-                val valueParameters = parameters.subList(1, parameters.size)
-
-                TopLevelExtensionFunction(function, method, instance, generator, valueParameters)
+                    TopLevelExtensionFunction(function, method, it, generator, valueParameters)
+                }
             }
             // javaMethodのパラメータサイズとKFunctionのパラメータサイズが違う場合も拡張関数
             // インスタンスが設定されていれば高速呼び出し、そうじゃなければ通常の関数呼び出し
@@ -182,20 +180,22 @@ sealed class FastKFunction<T> {
             val instance = inputtedInstance ?: method.declaringObject
 
             return if (parameters[0].kind == KParameter.Kind.INSTANCE) {
-                instance ?: throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.")
-                val instanceClazz = instance::class
+                instance.instanceOrThrow(KParameter.Kind.INSTANCE).let { nonNullInstance ->
+                    val instanceClazz = nonNullInstance::class
 
-                (parameters[0].type.classifier as KClass<*>).also {
-                    if (!it.isSuperclassOf(instanceClazz))
-                        throw IllegalArgumentException(
-                            "INSTANCE parameter required ${it.simpleName}, but ${instanceClazz.simpleName} is present."
-                        )
+                    (parameters[0].type.classifier as KClass<*>).also {
+                        if (!it.isSuperclassOf(instanceClazz))
+                            throw IllegalArgumentException(
+                                "INSTANCE parameter required ${it.simpleName}, " +
+                                        "but ${instanceClazz.simpleName} is present."
+                            )
+                    }
+
+                    val generator = BucketGenerator(parameters, instance)
+                    val valueParameters = parameters.subList(1, parameters.size)
+
+                    InstanceFunction(function, method, nonNullInstance, generator, valueParameters)
                 }
-
-                val generator = BucketGenerator(parameters, instance)
-                val valueParameters = parameters.subList(1, parameters.size)
-
-                InstanceFunction(function, method, instance, generator, valueParameters)
             } else {
                 instance
                     ?.let {
