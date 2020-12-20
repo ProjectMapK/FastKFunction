@@ -137,7 +137,7 @@ sealed class FastKFunction<T> {
             if (isEmpty() || (requireInstanceParameter && size == 1))
                 throw IllegalArgumentException("This function is not require arguments.")
 
-            if (3 <= size && requireInstanceParameter && get(1).kind != KParameter.Kind.VALUE)
+            if (2 <= size && this[1].kind != KParameter.Kind.VALUE)
                 throw IllegalArgumentException("This function is require multiple instances.")
         }
 
