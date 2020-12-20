@@ -135,4 +135,74 @@ private class SingleArgFastKFunctionTest {
             assertTrue(result is SingleArgFastKFunction.TopLevelFunction)
         }
     }
+
+    @Nested
+    inner class InstanceFunctionOfTest {
+        fun instanceFunc(arg: String) = println(arg)
+
+        @Nested
+        inner class KindIsInstance {
+            val function: KFunction<Unit> = InstanceFunctionOfTest::instanceFunc
+            val parameters = function.parameters
+            val javaMethod = function.javaMethod!!
+
+            @Test
+            fun withoutInstance() {
+                assertThrows<IllegalArgumentException> {
+                    SingleArgFastKFunction.instanceFunctionOf(function, null, parameters, javaMethod)
+                }
+            }
+
+            @Test
+            fun withWrongInstance() {
+                assertThrows<IllegalArgumentException> {
+                    SingleArgFastKFunction.instanceFunctionOf(function, "", parameters, javaMethod)
+                }
+            }
+
+            @Test
+            fun isCorrect() {
+                val result = assertDoesNotThrow {
+                    SingleArgFastKFunction.instanceFunctionOf(
+                        function, this@InstanceFunctionOfTest, parameters, javaMethod
+                    )
+                }
+                assertTrue(result is SingleArgFastKFunction.InstanceFunction)
+            }
+        }
+
+        @Nested
+        inner class InstanceFunction {
+            val function: KFunction<Unit> = this@InstanceFunctionOfTest::instanceFunc
+            val parameters = function.parameters
+            val javaMethod = function.javaMethod!!
+
+            @Test
+            fun withoutInstance() {
+                val result = assertDoesNotThrow {
+                    SingleArgFastKFunction.instanceFunctionOf(
+                        function, null, parameters, javaMethod
+                    )
+                }
+                assertTrue(result is SingleArgFastKFunction.Function)
+            }
+
+            @Test
+            fun withWrongInstance() {
+                assertThrows<IllegalArgumentException> {
+                    SingleArgFastKFunction.instanceFunctionOf(function, "", parameters, javaMethod)
+                }
+            }
+
+            @Test
+            fun withCorrectInstance() {
+                val result = assertDoesNotThrow {
+                    SingleArgFastKFunction.instanceFunctionOf(
+                        function, this@InstanceFunctionOfTest, parameters, javaMethod
+                    )
+                }
+                assertTrue(result is SingleArgFastKFunction.InstanceFunction)
+            }
+        }
+    }
 }
