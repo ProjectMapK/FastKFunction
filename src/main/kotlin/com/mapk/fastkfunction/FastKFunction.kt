@@ -8,8 +8,10 @@ import com.mapk.fastkfunction.spreadwrapper.ForMethod
 import org.jetbrains.annotations.TestOnly
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
@@ -181,6 +183,13 @@ sealed class FastKFunction<T> {
 
             return if (parameters[0].kind == KParameter.Kind.INSTANCE) {
                 instance ?: throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.")
+                val instanceClazz = instance::class
+
+                (parameters[0].type.classifier as KClass<*>).also {
+                    if (!it.isSuperclassOf(instanceClazz))
+                        throw IllegalArgumentException("INSTANCE parameter required ${it.simpleName}, " +
+                                "but ${instanceClazz.simpleName} is present.")
+                }
 
                 val generator = BucketGenerator(parameters, instance)
                 val valueParameters = parameters.subList(1, parameters.size)
