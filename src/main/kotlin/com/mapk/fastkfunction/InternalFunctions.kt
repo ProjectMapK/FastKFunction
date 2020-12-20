@@ -1,6 +1,7 @@
 package com.mapk.fastkfunction
 
 import java.lang.reflect.Method
+import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 
 /**
@@ -11,6 +12,14 @@ import kotlin.reflect.KParameter
  * @throws UnsupportedOperationException Method declared on top level.
  */
 internal val Method.declaringObject: Any? get() = declaringClass.kotlin.objectInstance
+
+/**
+ * Get KParameters KClass.
+ *
+ * @receiver KParameter.
+ * @returns KClass.
+ */
+internal val KParameter.clazz: KClass<*> get() = this.type.classifier as KClass<*>
 
 /**
  * Throw IllegalArgumentException if instance is null.
