@@ -18,19 +18,17 @@ private fun topLevelFunc(arg: String) = println(arg)
 private fun String.topLevelExtensionFunc(arg: String) = println(this + arg)
 
 private class FastKFunctionTest {
-    val valueParameter = mockk<KParameter>() {
-        every { kind } returns KParameter.Kind.VALUE
-    }
-    val instanceParameter = mockk<KParameter>() {
-        every { kind } returns KParameter.Kind.INSTANCE
-    }
-    val extensionReceiverParameter = mockk<KParameter>() {
-        every { kind } returns KParameter.Kind.EXTENSION_RECEIVER
-    }
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class CheckParametersTest {
+        val valueParameter = mockk<KParameter>() {
+            every { kind } returns KParameter.Kind.VALUE
+        }
+        val instanceParameter = mockk<KParameter>() {
+            every { kind } returns KParameter.Kind.INSTANCE
+        }
+
         @ParameterizedTest
         @MethodSource("emptyParamListProvider")
         fun isEmpty(params: List<KParameter>) {
