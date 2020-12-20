@@ -1,5 +1,6 @@
 package com.mapk.fastkfunction
 
+import org.jetbrains.annotations.TestOnly
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
@@ -54,7 +55,8 @@ sealed class SingleArgFastKFunction<T> {
     }
 
     companion object {
-        private fun List<KParameter>.checkParameters() = also {
+        @TestOnly
+        internal fun List<KParameter>.checkParameters() = also {
             val requireInstanceParameter = this[0].kind != KParameter.Kind.VALUE
 
             if (isEmpty() || (requireInstanceParameter && size == 1))
