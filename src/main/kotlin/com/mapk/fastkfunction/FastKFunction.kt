@@ -150,6 +150,8 @@ sealed class FastKFunction<T> {
             parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER -> {
                 // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
                 instance.instanceOrThrow(KParameter.Kind.EXTENSION_RECEIVER).let {
+                    checkInstanceClass(parameters[0].clazz, it::class)
+
                     val generator = BucketGenerator(parameters, it)
                     val valueParameters = parameters.subList(1, parameters.size)
 
@@ -161,6 +163,8 @@ sealed class FastKFunction<T> {
             method.parameters.size != parameters.size ->
                 instance
                     ?.let {
+                        checkInstanceClass(method.parameters[0].type.kotlin, it::class)
+
                         // KFunctionとしては値パラメータを求めていないため、バケツにはインスタンスを設定しない
                         TopLevelExtensionFunction(function, method, it, BucketGenerator(parameters, null), parameters)
                     } ?: Function(function, parameters)
