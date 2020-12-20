@@ -106,28 +106,12 @@ sealed class SingleArgFastKFunction<T> {
             return when {
                 parameters[0].kind == KParameter.Kind.INSTANCE ->
                     instance.instanceOrThrow(KParameter.Kind.INSTANCE).let {
-                        val instanceClazz = it::class
-
-                        method.declaringClass.kotlin.also { requiredClazz ->
-                            if (!requiredClazz.isSuperclassOf(instanceClazz))
-                                throw IllegalArgumentException(
-                                    "INSTANCE parameter required ${requiredClazz.simpleName}, " +
-                                            "but ${instanceClazz.simpleName} is present."
-                                )
-                        }
+                        checkInstanceClass(method.declaringClass.kotlin, it::class)
 
                         InstanceFunction(parameters[1], method, it)
                     }
                 instance != null -> {
-                    val instanceClazz = instance::class
-
-                    method.declaringClass.kotlin.also {
-                        if (!it.isSuperclassOf(instanceClazz))
-                            throw IllegalArgumentException(
-                                "INSTANCE parameter required ${it.simpleName}, " +
-                                        "but ${instanceClazz.simpleName} is present."
-                            )
-                    }
+                    checkInstanceClass(method.declaringClass.kotlin, instance::class)
 
                     InstanceFunction(parameters[0], method, instance)
                 }
