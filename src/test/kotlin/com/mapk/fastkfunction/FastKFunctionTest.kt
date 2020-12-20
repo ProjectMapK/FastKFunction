@@ -26,10 +26,10 @@ private class FastKFunctionTest {
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class CheckParametersTest {
-        val valueParameter = mockk<KParameter>() {
+        val valueParameter = mockk<KParameter> {
             every { kind } returns KParameter.Kind.VALUE
         }
-        val instanceParameter = mockk<KParameter>() {
+        val instanceParameter = mockk<KParameter> {
             every { kind } returns KParameter.Kind.INSTANCE
         }
 
