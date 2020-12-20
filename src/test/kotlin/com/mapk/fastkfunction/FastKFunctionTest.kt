@@ -67,17 +67,24 @@ private class FastKFunctionTest {
     @Nested
     inner class TopLevelFunctionOfTest {
         @Nested
+        @TestInstance(TestInstance.Lifecycle.PER_CLASS)
         inner class KindIsExtensionFunction {
             val function: KFunction<Unit> = String::topLevelExtensionFunc
             val parameters = function.parameters
             val javaMethod = function.javaMethod!!
 
-            @Test
-            fun nullInstanceTest() {
+            @ParameterizedTest
+            @MethodSource("illegalReceiverProvider")
+            fun illegalReceiverTest(receiver: Any?) {
                 assertThrows<IllegalArgumentException> {
-                    FastKFunction.topLevelFunctionOf(function, null, parameters, javaMethod)
+                    FastKFunction.topLevelFunctionOf(function, receiver, parameters, javaMethod)
                 }
             }
+
+            fun illegalReceiverProvider(): Stream<Arguments> = Stream.of(
+                Arguments.of(null),
+                Arguments.of(0)
+            )
 
             @Test
             fun isCorrect() {
@@ -94,6 +101,13 @@ private class FastKFunctionTest {
             val function: KFunction<Unit> = instance::topLevelExtensionFunc
             val parameters = function.parameters
             val javaMethod = function.javaMethod!!
+
+            @Test
+            fun withIllegalReceiverTest() {
+                assertThrows<IllegalArgumentException> {
+                    FastKFunction.topLevelFunctionOf(function, 0, parameters, javaMethod)
+                }
+            }
 
             @Test
             fun withInstanceTest() {
