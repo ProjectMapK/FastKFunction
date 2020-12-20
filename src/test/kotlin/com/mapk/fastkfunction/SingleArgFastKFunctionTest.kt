@@ -164,7 +164,10 @@ private class SingleArgFastKFunctionTest {
             fun isCorrect() {
                 val result = assertDoesNotThrow {
                     SingleArgFastKFunction.instanceFunctionOf(
-                        function, this@InstanceFunctionOfTest, parameters, javaMethod
+                        function,
+                        this@InstanceFunctionOfTest,
+                        parameters,
+                        javaMethod
                     )
                 }
                 assertTrue(result is SingleArgFastKFunction.InstanceFunction)
@@ -181,7 +184,10 @@ private class SingleArgFastKFunctionTest {
             fun withoutInstance() {
                 val result = assertDoesNotThrow {
                     SingleArgFastKFunction.instanceFunctionOf(
-                        function, null, parameters, javaMethod
+                        function,
+                        null,
+                        parameters,
+                        javaMethod
                     )
                 }
                 assertTrue(result is SingleArgFastKFunction.Function)
@@ -198,7 +204,10 @@ private class SingleArgFastKFunctionTest {
             fun withCorrectInstance() {
                 val result = assertDoesNotThrow {
                     SingleArgFastKFunction.instanceFunctionOf(
-                        function, this@InstanceFunctionOfTest, parameters, javaMethod
+                        function,
+                        this@InstanceFunctionOfTest,
+                        parameters,
+                        javaMethod
                     )
                 }
                 assertTrue(result is SingleArgFastKFunction.InstanceFunction)

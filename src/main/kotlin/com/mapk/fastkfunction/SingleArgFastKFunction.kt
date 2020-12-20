@@ -5,7 +5,6 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
@@ -81,7 +80,9 @@ sealed class SingleArgFastKFunction<T> {
             parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER -> {
                 // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
                 TopLevelExtensionFunction(
-                    parameters[1], method, instance.instanceOrThrow(KParameter.Kind.EXTENSION_RECEIVER)
+                    parameters[1],
+                    method,
+                    instance.instanceOrThrow(KParameter.Kind.EXTENSION_RECEIVER)
                 )
             }
             // javaMethodのパラメータサイズとKFunctionのパラメータサイズが違う場合も拡張関数
