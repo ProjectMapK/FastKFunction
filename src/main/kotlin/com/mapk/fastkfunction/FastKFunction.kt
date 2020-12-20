@@ -5,6 +5,7 @@ import com.mapk.fastkfunction.argumentbucket.BucketGenerator
 import com.mapk.fastkfunction.spreadwrapper.ForConstructor
 import com.mapk.fastkfunction.spreadwrapper.ForKFunction
 import com.mapk.fastkfunction.spreadwrapper.ForMethod
+import org.jetbrains.annotations.TestOnly
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
@@ -129,7 +130,8 @@ sealed class FastKFunction<T> {
     }
 
     companion object {
-        private fun List<KParameter>.checkParameters() = also {
+        @TestOnly
+        internal fun List<KParameter>.checkParameters() = also {
             val requireInstanceParameter = this[0].kind != KParameter.Kind.VALUE
 
             if (isEmpty() || (requireInstanceParameter && size == 1))
