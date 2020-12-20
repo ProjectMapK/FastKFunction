@@ -187,8 +187,9 @@ sealed class FastKFunction<T> {
 
                 (parameters[0].type.classifier as KClass<*>).also {
                     if (!it.isSuperclassOf(instanceClazz))
-                        throw IllegalArgumentException("INSTANCE parameter required ${it.simpleName}, " +
-                                "but ${instanceClazz.simpleName} is present.")
+                        throw IllegalArgumentException(
+                            "INSTANCE parameter required ${it.simpleName}, but ${instanceClazz.simpleName} is present."
+                        )
                 }
 
                 val generator = BucketGenerator(parameters, instance)
@@ -203,8 +204,8 @@ sealed class FastKFunction<T> {
                         method.declaringClass.kotlin.also { requiredClazz ->
                             if (!requiredClazz.isSuperclassOf(instanceClazz))
                                 throw IllegalArgumentException(
-                                    "INSTANCE parameter required ${instanceClazz.simpleName}, "
-                                            + "but ${instanceClazz.simpleName} is present."
+                                    "INSTANCE parameter required ${instanceClazz.simpleName}, " +
+                                        "but ${instanceClazz.simpleName} is present."
                                 )
                         }
 
