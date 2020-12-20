@@ -170,7 +170,8 @@ sealed class FastKFunction<T> {
             else -> TopLevelFunction(function, method, parameters)
         }
 
-        private fun <T> instanceFunctionOf(
+        @TestOnly
+        internal fun <T> instanceFunctionOf(
             function: KFunction<T>,
             inputtedInstance: Any?,
             parameters: List<KParameter>,
