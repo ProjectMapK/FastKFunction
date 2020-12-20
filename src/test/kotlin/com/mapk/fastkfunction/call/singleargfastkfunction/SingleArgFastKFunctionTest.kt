@@ -1,4 +1,4 @@
-package com.mapk.fastkfunction.singleargfastkfunction
+package com.mapk.fastkfunction.call.singleargfastkfunction
 
 import com.mapk.fastkfunction.SingleArgFastKFunction
 import org.junit.jupiter.api.Assertions
