@@ -121,4 +121,68 @@ private class FastKFunctionTest {
             assertTrue(result is FastKFunction.TopLevelFunction)
         }
     }
+
+    @Nested
+    inner class InstanceFunctionOfTest {
+        fun instanceFunc(arg: String) = println(arg)
+
+        @Nested
+        inner class KindIsInstance {
+            val function: KFunction<Unit> = InstanceFunctionOfTest::instanceFunc
+            val parameters = function.parameters
+            val javaMethod = function.javaMethod!!
+
+            @Test
+            fun withoutInstance() {
+                assertThrows<IllegalArgumentException> {
+                    FastKFunction.instanceFunctionOf(function, null, parameters, javaMethod)
+                }
+            }
+
+            @Test
+            fun withWrongInstance() {
+                assertThrows<IllegalArgumentException> {
+                    FastKFunction.instanceFunctionOf(function, "", parameters, javaMethod)
+                }
+            }
+
+            @Test
+            fun isCorrect() {
+                val result = assertDoesNotThrow {
+                    FastKFunction.instanceFunctionOf(function, this@InstanceFunctionOfTest, parameters, javaMethod)
+                }
+                assertTrue(result is FastKFunction.InstanceFunction)
+            }
+        }
+
+        @Nested
+        inner class InstanceFunction {
+            val function: KFunction<Unit> = this@InstanceFunctionOfTest::instanceFunc
+            val parameters = function.parameters
+            val javaMethod = function.javaMethod!!
+
+            @Test
+            fun withoutInstance() {
+                val result = assertDoesNotThrow {
+                    FastKFunction.instanceFunctionOf(function, null, parameters, javaMethod)
+                }
+                assertTrue(result is FastKFunction.Function)
+            }
+
+            @Test
+            fun withWrongInstance() {
+                assertThrows<IllegalArgumentException> {
+                    FastKFunction.instanceFunctionOf(function, "", parameters, javaMethod)
+                }
+            }
+
+            @Test
+            fun withCorrectInstance() {
+                val result = assertDoesNotThrow {
+                    FastKFunction.instanceFunctionOf(function, this@InstanceFunctionOfTest, parameters, javaMethod)
+                }
+                assertTrue(result is FastKFunction.InstanceFunction)
+            }
+        }
+    }
 }
