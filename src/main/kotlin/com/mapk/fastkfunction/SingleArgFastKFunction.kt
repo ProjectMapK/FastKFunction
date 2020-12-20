@@ -77,19 +77,22 @@ sealed class SingleArgFastKFunction<T> {
             method: Method
         ): SingleArgFastKFunction<T> = when {
             // KParameter.Kind.EXTENSION_RECEIVERの要求が有れば確定で拡張関数
-            parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER -> {
+            parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER ->
                 // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
-                TopLevelExtensionFunction(
-                    parameters[1],
-                    method,
-                    instance.instanceOrThrow(KParameter.Kind.EXTENSION_RECEIVER)
-                )
-            }
+                instance.instanceOrThrow(KParameter.Kind.EXTENSION_RECEIVER).let {
+                    checkInstanceClass(parameters[0].clazz, it::class)
+
+                    TopLevelExtensionFunction(parameters[1], method, it)
+                }
             // javaMethodのパラメータサイズとKFunctionのパラメータサイズが違う場合も拡張関数
             // インスタンスが設定されていれば高速呼び出し、そうじゃなければ通常の関数呼び出し
             method.parameters.size != parameters.size ->
                 instance
-                    ?.let { TopLevelExtensionFunction(parameters[0], method, instance) }
+                    ?.let {
+                        checkInstanceClass(method.parameters[0].type.kotlin, it::class)
+
+                        TopLevelExtensionFunction(parameters[0], method, instance)
+                    }
                     ?: Function(parameters[0], function)
             // トップレベル関数
             else -> TopLevelFunction(parameters[0], method)
