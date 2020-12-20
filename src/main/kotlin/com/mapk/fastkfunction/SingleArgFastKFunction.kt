@@ -64,6 +64,9 @@ sealed class SingleArgFastKFunction<T> {
 
             if (!(this.size == 1 || (this.size == 2 && requireInstanceParameter)))
                 throw IllegalArgumentException("This function is require multiple arguments.")
+
+            if (this.size == 2 && this[1].kind != KParameter.Kind.VALUE)
+                throw IllegalArgumentException("This function is require multiple instances.")
         }
 
         private fun <T> topLevelFunctionOf(
