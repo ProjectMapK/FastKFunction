@@ -5,6 +5,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
@@ -107,9 +108,33 @@ sealed class SingleArgFastKFunction<T> {
             return when {
                 parameters[0].kind == KParameter.Kind.INSTANCE ->
                     instance
-                        ?.let { InstanceFunction(parameters[1], method, it) }
+                        ?.let {
+                            val instanceClazz = it::class
+
+                            method.declaringClass.kotlin.also { requiredClazz ->
+                                if (!requiredClazz.isSuperclassOf(instanceClazz))
+                                    throw IllegalArgumentException(
+                                        "INSTANCE parameter required ${instanceClazz.simpleName}, " +
+                                                "but ${instanceClazz.simpleName} is present."
+                                    )
+                            }
+
+                            InstanceFunction(parameters[1], method, it)
+                        }
                         ?: throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.")
-                instance != null -> InstanceFunction(parameters[0], method, instance)
+                instance != null -> {
+                    val instanceClazz = instance::class
+
+                    method.declaringClass.kotlin.also {
+                        if (!it.isSuperclassOf(instanceClazz))
+                            throw IllegalArgumentException(
+                                "INSTANCE parameter required ${it.simpleName}, " +
+                                        "but ${instanceClazz.simpleName} is present."
+                            )
+                    }
+
+                    InstanceFunction(parameters[0], method, instance)
+                }
                 else -> Function(parameters[0], function)
             }
         }
