@@ -147,7 +147,7 @@ sealed class FastKFunction<T> {
             method: Method
         ): FastKFunction<T> = when {
             // KParameter.Kind.EXTENSION_RECEIVERの要求が有れば確定で拡張関数
-            parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER -> {
+            parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER ->
                 // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
                 instance.instanceOrThrow(KParameter.Kind.EXTENSION_RECEIVER).let {
                     checkInstanceClass(parameters[0].clazz, it::class)
@@ -157,7 +157,6 @@ sealed class FastKFunction<T> {
 
                     TopLevelExtensionFunction(function, method, it, generator, valueParameters)
                 }
-            }
             // javaMethodのパラメータサイズとKFunctionのパラメータサイズが違う場合も拡張関数
             // インスタンスが設定されていれば高速呼び出し、そうじゃなければ通常の関数呼び出し
             method.parameters.size != parameters.size ->
