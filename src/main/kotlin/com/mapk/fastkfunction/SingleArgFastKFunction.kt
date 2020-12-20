@@ -95,7 +95,8 @@ sealed class SingleArgFastKFunction<T> {
             else -> TopLevelFunction(parameters[0], method)
         }
 
-        private fun <T> instanceFunctionOf(
+        @TestOnly
+        internal fun <T> instanceFunctionOf(
             function: KFunction<T>,
             inputtedInstance: Any?,
             parameters: List<KParameter>,
