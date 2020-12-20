@@ -5,6 +5,7 @@ import com.mapk.fastkfunction.argumentbucket.BucketGenerator
 import com.mapk.fastkfunction.spreadwrapper.ForConstructor
 import com.mapk.fastkfunction.spreadwrapper.ForKFunction
 import com.mapk.fastkfunction.spreadwrapper.ForMethod
+import org.jetbrains.annotations.TestOnly
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
@@ -129,39 +130,40 @@ sealed class FastKFunction<T> {
     }
 
     companion object {
-        private fun List<KParameter>.checkParameters() = also {
-            val requireInstanceParameter = this[0].kind != KParameter.Kind.VALUE
-
-            if (isEmpty() || (requireInstanceParameter && size == 1))
+        @TestOnly
+        internal fun List<KParameter>.checkParameters() = also {
+            if (isEmpty() || (this[0].kind != KParameter.Kind.VALUE && size == 1))
                 throw IllegalArgumentException("This function is not require arguments.")
 
-            if (3 <= size && requireInstanceParameter && get(1).kind != KParameter.Kind.VALUE)
+            if (2 <= size && this[1].kind != KParameter.Kind.VALUE)
                 throw IllegalArgumentException("This function is require multiple instances.")
         }
 
-        private fun <T> topLevelFunctionOf(
+        @TestOnly
+        internal fun <T> topLevelFunctionOf(
             function: KFunction<T>,
             instance: Any?,
             parameters: List<KParameter>,
             method: Method
         ): FastKFunction<T> = when {
             // KParameter.Kind.EXTENSION_RECEIVERの要求が有れば確定で拡張関数
-            parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER -> {
+            parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER ->
                 // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
-                instance ?: throw IllegalArgumentException(
-                    "Function requires EXTENSION_RECEIVER instance, but is not present."
-                )
+                instance.instanceOrThrow(KParameter.Kind.EXTENSION_RECEIVER).let {
+                    checkInstanceClass(parameters[0].clazz, it::class)
 
-                val generator = BucketGenerator(parameters, instance)
-                val valueParameters = parameters.subList(1, parameters.size)
+                    val generator = BucketGenerator(parameters, it)
+                    val valueParameters = parameters.subList(1, parameters.size)
 
-                TopLevelExtensionFunction(function, method, instance, generator, valueParameters)
-            }
+                    TopLevelExtensionFunction(function, method, it, generator, valueParameters)
+                }
             // javaMethodのパラメータサイズとKFunctionのパラメータサイズが違う場合も拡張関数
             // インスタンスが設定されていれば高速呼び出し、そうじゃなければ通常の関数呼び出し
             method.parameters.size != parameters.size ->
                 instance
                     ?.let {
+                        checkInstanceClass(method.parameters[0].type.kotlin, it::class)
+
                         // KFunctionとしては値パラメータを求めていないため、バケツにはインスタンスを設定しない
                         TopLevelExtensionFunction(function, method, it, BucketGenerator(parameters, null), parameters)
                     } ?: Function(function, parameters)
@@ -169,7 +171,8 @@ sealed class FastKFunction<T> {
             else -> TopLevelFunction(function, method, parameters)
         }
 
-        private fun <T> instanceFunctionOf(
+        @TestOnly
+        internal fun <T> instanceFunctionOf(
             function: KFunction<T>,
             inputtedInstance: Any?,
             parameters: List<KParameter>,
@@ -178,15 +181,21 @@ sealed class FastKFunction<T> {
             val instance = inputtedInstance ?: method.declaringObject
 
             return if (parameters[0].kind == KParameter.Kind.INSTANCE) {
-                instance ?: throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.")
+                instance.instanceOrThrow(KParameter.Kind.INSTANCE).let { nonNullInstance ->
+                    checkInstanceClass(parameters[0].clazz, nonNullInstance::class)
 
-                val generator = BucketGenerator(parameters, instance)
-                val valueParameters = parameters.subList(1, parameters.size)
+                    val generator = BucketGenerator(parameters, instance)
+                    val valueParameters = parameters.subList(1, parameters.size)
 
-                InstanceFunction(function, method, instance, generator, valueParameters)
+                    InstanceFunction(function, method, nonNullInstance, generator, valueParameters)
+                }
             } else {
                 instance
-                    ?.let { InstanceFunction(function, method, it, BucketGenerator(parameters, null), parameters) }
+                    ?.let {
+                        checkInstanceClass(method.declaringClass.kotlin, it::class)
+
+                        InstanceFunction(function, method, it, BucketGenerator(parameters, null), parameters)
+                    }
                     ?: Function(function, parameters)
             }
         }

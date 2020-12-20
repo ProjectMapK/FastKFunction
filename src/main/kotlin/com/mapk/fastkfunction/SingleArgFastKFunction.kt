@@ -1,5 +1,6 @@
 package com.mapk.fastkfunction
 
+import org.jetbrains.annotations.TestOnly
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
@@ -54,42 +55,51 @@ sealed class SingleArgFastKFunction<T> {
     }
 
     companion object {
-        private fun List<KParameter>.checkParameters() = also {
-            val requireInstanceParameter = this[0].kind != KParameter.Kind.VALUE
+        @TestOnly
+        internal fun List<KParameter>.checkParameters() = also {
+            val requireInstanceParameter = !isEmpty() && this[0].kind != KParameter.Kind.VALUE
 
             if (isEmpty() || (requireInstanceParameter && size == 1))
                 throw IllegalArgumentException("This function is not require arguments.")
 
             if (!(this.size == 1 || (this.size == 2 && requireInstanceParameter)))
                 throw IllegalArgumentException("This function is require multiple arguments.")
+
+            if (this.size == 2 && this[1].kind != KParameter.Kind.VALUE)
+                throw IllegalArgumentException("This function is require multiple instances.")
         }
 
-        private fun <T> topLevelFunctionOf(
+        @TestOnly
+        internal fun <T> topLevelFunctionOf(
             function: KFunction<T>,
             instance: Any?,
             parameters: List<KParameter>,
             method: Method
         ): SingleArgFastKFunction<T> = when {
             // KParameter.Kind.EXTENSION_RECEIVERの要求が有れば確定で拡張関数
-            parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER -> {
+            parameters[0].kind == KParameter.Kind.EXTENSION_RECEIVER ->
                 // 対象が拡張関数ならinstanceはreceiver、指定が無ければエラー
-                instance ?: throw IllegalArgumentException(
-                    "Function requires EXTENSION_RECEIVER instance, but is not present."
-                )
+                instance.instanceOrThrow(KParameter.Kind.EXTENSION_RECEIVER).let {
+                    checkInstanceClass(parameters[0].clazz, it::class)
 
-                TopLevelExtensionFunction(parameters[1], method, instance)
-            }
+                    TopLevelExtensionFunction(parameters[1], method, it)
+                }
             // javaMethodのパラメータサイズとKFunctionのパラメータサイズが違う場合も拡張関数
             // インスタンスが設定されていれば高速呼び出し、そうじゃなければ通常の関数呼び出し
             method.parameters.size != parameters.size ->
                 instance
-                    ?.let { TopLevelExtensionFunction(parameters[0], method, instance) }
+                    ?.let {
+                        checkInstanceClass(method.parameters[0].type.kotlin, it::class)
+
+                        TopLevelExtensionFunction(parameters[0], method, instance)
+                    }
                     ?: Function(parameters[0], function)
             // トップレベル関数
             else -> TopLevelFunction(parameters[0], method)
         }
 
-        private fun <T> instanceFunctionOf(
+        @TestOnly
+        internal fun <T> instanceFunctionOf(
             function: KFunction<T>,
             inputtedInstance: Any?,
             parameters: List<KParameter>,
@@ -99,10 +109,16 @@ sealed class SingleArgFastKFunction<T> {
 
             return when {
                 parameters[0].kind == KParameter.Kind.INSTANCE ->
-                    instance
-                        ?.let { InstanceFunction(parameters[1], method, it) }
-                        ?: throw IllegalArgumentException("Function requires INSTANCE parameter, but is not present.")
-                instance != null -> InstanceFunction(parameters[0], method, instance)
+                    instance.instanceOrThrow(KParameter.Kind.INSTANCE).let {
+                        checkInstanceClass(method.declaringClass.kotlin, it::class)
+
+                        InstanceFunction(parameters[1], method, it)
+                    }
+                instance != null -> {
+                    checkInstanceClass(method.declaringClass.kotlin, instance::class)
+
+                    InstanceFunction(parameters[0], method, instance)
+                }
                 else -> Function(parameters[0], function)
             }
         }

@@ -1,4 +1,4 @@
-package com.mapk.fastkfunction.singleargfastkfunction
+package com.mapk.fastkfunction.call.singleargfastkfunction
 
 import com.mapk.fastkfunction.SingleArgFastKFunction
 import org.junit.jupiter.api.Assertions
@@ -13,9 +13,9 @@ import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.functions
 
-private fun topLevelFunc(arg: Int): SingleArgSingleArgFastKFunctionTest.Dst = SingleArgSingleArgFastKFunctionTest.Dst(arg)
-private fun SingleArgSingleArgFastKFunctionTest.Class.topLevelExtensionFunc(arg: Int): SingleArgSingleArgFastKFunctionTest.Dst =
-    SingleArgSingleArgFastKFunctionTest.Dst(this.arg + arg)
+private fun topLevelFunc(arg: Int): SingleArgSingleArgFastKFunctionCallTest.Dst = SingleArgSingleArgFastKFunctionCallTest.Dst(arg)
+private fun SingleArgSingleArgFastKFunctionCallTest.Class.topLevelExtensionFunc(arg: Int): SingleArgSingleArgFastKFunctionCallTest.Dst =
+    SingleArgSingleArgFastKFunctionCallTest.Dst(this.arg + arg)
 
 /**
  * 網羅しているパターン
@@ -32,7 +32,7 @@ private fun SingleArgSingleArgFastKFunctionTest.Class.topLevelExtensionFunc(arg:
  * - インスタンスから取得したトップレベル拡張関数 + インスタンス
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-private class SingleArgSingleArgFastKFunctionTest {
+private class SingleArgSingleArgFastKFunctionCallTest {
     class Class(val arg: Int)
 
     data class Dst(val arg: Int) {

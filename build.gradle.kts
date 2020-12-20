@@ -1,6 +1,6 @@
 plugins {
     id("maven")
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.4.21"
     // プロダクションコード以外
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
     id("jacoco")
@@ -22,6 +22,7 @@ dependencies {
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.7.0") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
+    testImplementation("io.mockk:mockk:1.10.3-jdk8")
 
     implementation(group = "org.openjdk.jmh", name = "jmh-core", version = "1.26")
 }

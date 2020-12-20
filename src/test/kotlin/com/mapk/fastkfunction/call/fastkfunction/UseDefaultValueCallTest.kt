@@ -1,4 +1,4 @@
-package com.mapk.fastkfunction.fastkfunction
+package com.mapk.fastkfunction.call.fastkfunction
 
 import com.mapk.fastkfunction.FastKFunction
 import org.junit.jupiter.api.Assertions.assertEquals
