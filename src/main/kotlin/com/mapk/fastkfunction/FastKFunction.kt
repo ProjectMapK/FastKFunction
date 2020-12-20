@@ -197,7 +197,19 @@ sealed class FastKFunction<T> {
                 InstanceFunction(function, method, instance, generator, valueParameters)
             } else {
                 instance
-                    ?.let { InstanceFunction(function, method, it, BucketGenerator(parameters, null), parameters) }
+                    ?.let {
+                        val instanceClazz = it::class
+
+                        method.declaringClass.kotlin.also { requiredClazz ->
+                            if (!requiredClazz.isSuperclassOf(instanceClazz))
+                                throw IllegalArgumentException(
+                                    "INSTANCE parameter required ${instanceClazz.simpleName}, "
+                                            + "but ${instanceClazz.simpleName} is present."
+                                )
+                        }
+
+                        InstanceFunction(function, method, it, BucketGenerator(parameters, null), parameters)
+                    }
                     ?: Function(function, parameters)
             }
         }
