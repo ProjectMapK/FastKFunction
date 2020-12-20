@@ -139,7 +139,8 @@ sealed class FastKFunction<T> {
                 throw IllegalArgumentException("This function is require multiple instances.")
         }
 
-        private fun <T> topLevelFunctionOf(
+        @TestOnly
+        internal fun <T> topLevelFunctionOf(
             function: KFunction<T>,
             instance: Any?,
             parameters: List<KParameter>,
