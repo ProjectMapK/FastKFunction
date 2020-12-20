@@ -57,7 +57,7 @@ sealed class SingleArgFastKFunction<T> {
     companion object {
         @TestOnly
         internal fun List<KParameter>.checkParameters() = also {
-            val requireInstanceParameter = this[0].kind != KParameter.Kind.VALUE
+            val requireInstanceParameter = !isEmpty() && this[0].kind != KParameter.Kind.VALUE
 
             if (isEmpty() || (requireInstanceParameter && size == 1))
                 throw IllegalArgumentException("This function is not require arguments.")
