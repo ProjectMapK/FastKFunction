@@ -22,7 +22,7 @@ dependencies {
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.7.0") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-    testImplementation("io.mockk:mockk:1.10.3")
+    testImplementation("io.mockk:mockk:1.10.3-jdk8")
 
     implementation(group = "org.openjdk.jmh", name = "jmh-core", version = "1.26")
 }
