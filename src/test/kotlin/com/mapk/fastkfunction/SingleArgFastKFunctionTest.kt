@@ -4,6 +4,7 @@ import com.mapk.fastkfunction.SingleArgFastKFunction.Companion.checkParameters
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -13,7 +14,12 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
+import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.jvm.javaMethod
+
+private fun topLevelFunc(arg: String) = println(arg)
+private fun String.topLevelExtensionFunc(arg: String) = println(this + arg)
 
 private class SingleArgFastKFunctionTest {
     @Nested
@@ -68,5 +74,65 @@ private class SingleArgFastKFunctionTest {
             Arguments.of(listOf(valueParameter)),
             Arguments.of(listOf(instanceParameter, valueParameter))
         )
+    }
+
+    @Nested
+    inner class TopLevelFunctionOfTest {
+        @Nested
+        inner class KindIsExtensionFunction {
+            val function: KFunction<Unit> = String::topLevelExtensionFunc
+            val parameters = function.parameters
+            val javaMethod = function.javaMethod!!
+
+            @Test
+            fun nullInstanceTest() {
+                assertThrows<IllegalArgumentException> {
+                    SingleArgFastKFunction.topLevelFunctionOf(function, null, parameters, javaMethod)
+                }
+            }
+
+            @Test
+            fun isCorrect() {
+                val result = assertDoesNotThrow {
+                    SingleArgFastKFunction.topLevelFunctionOf(function, "", parameters, javaMethod)
+                }
+                assertTrue(result is SingleArgFastKFunction.TopLevelExtensionFunction)
+            }
+        }
+
+        @Nested
+        inner class ExtensionFunction {
+            val instance = ""
+            val function: KFunction<Unit> = instance::topLevelExtensionFunc
+            val parameters = function.parameters
+            val javaMethod = function.javaMethod!!
+
+            @Test
+            fun withInstanceTest() {
+                val result = assertDoesNotThrow {
+                    SingleArgFastKFunction.topLevelFunctionOf(function, "", parameters, javaMethod)
+                }
+                assertTrue(result is SingleArgFastKFunction.TopLevelExtensionFunction)
+            }
+
+            @Test
+            fun withoutInstanceTest() {
+                val result = assertDoesNotThrow {
+                    SingleArgFastKFunction.topLevelFunctionOf(function, null, parameters, javaMethod)
+                }
+                assertTrue(result is SingleArgFastKFunction.Function)
+            }
+        }
+
+        @Test
+        fun topLevelFunctionTest() {
+            val function: KFunction<Unit> = ::topLevelFunc
+            val parameters = function.parameters
+
+            val result = assertDoesNotThrow {
+                SingleArgFastKFunction.topLevelFunctionOf(function, null, parameters, function.javaMethod!!)
+            }
+            assertTrue(result is SingleArgFastKFunction.TopLevelFunction)
+        }
     }
 }
