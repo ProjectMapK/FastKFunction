@@ -204,7 +204,7 @@ sealed class FastKFunction<T> {
                         method.declaringClass.kotlin.also { requiredClazz ->
                             if (!requiredClazz.isSuperclassOf(instanceClazz))
                                 throw IllegalArgumentException(
-                                    "INSTANCE parameter required ${instanceClazz.simpleName}, " +
+                                    "INSTANCE parameter required ${requiredClazz.simpleName}, " +
                                         "but ${instanceClazz.simpleName} is present."
                                 )
                         }
