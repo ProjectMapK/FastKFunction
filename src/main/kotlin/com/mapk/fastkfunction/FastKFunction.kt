@@ -132,9 +132,7 @@ sealed class FastKFunction<T> {
     companion object {
         @TestOnly
         internal fun List<KParameter>.checkParameters() = also {
-            val requireInstanceParameter = !isEmpty() && this[0].kind != KParameter.Kind.VALUE
-
-            if (isEmpty() || (requireInstanceParameter && size == 1))
+            if (isEmpty() || (this[0].kind != KParameter.Kind.VALUE && size == 1))
                 throw IllegalArgumentException("This function is not require arguments.")
 
             if (2 <= size && this[1].kind != KParameter.Kind.VALUE)
