@@ -1,6 +1,7 @@
 package com.mapk.fastkfunction.argumentbucket
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
@@ -92,5 +93,14 @@ private class ArgumentBucketTest {
         entries.forEach {
             assertEquals(it.key.index, (it.value as Number).toInt())
         }
+    }
+
+    @Test
+    fun isEmptyTest() {
+        assertTrue(bucket.isEmpty())
+
+        bucket[0] = 0.toShort()
+
+        assertFalse(bucket.isEmpty())
     }
 }
