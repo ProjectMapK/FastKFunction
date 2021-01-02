@@ -96,6 +96,41 @@ private class ArgumentBucketTest {
     }
 
     @Test
+    fun keysTest() {
+        assertTrue(bucket.keys.isEmpty())
+
+        bucket[0] = 0.toShort()
+        val result = bucket.keys
+
+        assertEquals(1, result.size)
+        assertEquals(0, result.single().index)
+    }
+
+    @Test
+    fun valuesTest() {
+        assertTrue(bucket.isEmpty())
+
+        bucket[0] = null
+        bucket[1] = 100
+        val result = bucket.values
+
+        assertTrue(result.contains(null))
+        assertTrue(result.contains(100))
+    }
+
+    @Test
+    fun containsValueTest() {
+        assertFalse(bucket.containsValue(null))
+        assertFalse(bucket.containsValue(100))
+
+        bucket[0] = null
+        bucket[1] = 100
+
+        assertTrue(bucket.containsValue(null))
+        assertTrue(bucket.containsValue(100))
+    }
+
+    @Test
     fun isEmptyTest() {
         assertTrue(bucket.isEmpty())
 
