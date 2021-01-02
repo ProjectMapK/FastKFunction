@@ -1,6 +1,7 @@
 package com.mapk.fastkfunction.argumentbucket
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
@@ -78,5 +79,63 @@ private class ArgumentBucketTest {
                 assertEquals(firstValue, bucket[index])
             }
         }
+    }
+
+    @Test
+    fun entriesTest() {
+        assertTrue(bucket.entries.isEmpty())
+
+        bucket[0] = 0.toShort()
+        bucket[1] = 1
+
+        val entries = bucket.entries.sortedBy { it.key.index }
+        assertEquals(2, entries.size)
+        entries.forEach {
+            assertEquals(it.key.index, (it.value as Number).toInt())
+        }
+    }
+
+    @Test
+    fun keysTest() {
+        assertTrue(bucket.keys.isEmpty())
+
+        bucket[0] = 0.toShort()
+        val result = bucket.keys
+
+        assertEquals(1, result.size)
+        assertEquals(0, result.single().index)
+    }
+
+    @Test
+    fun valuesTest() {
+        assertTrue(bucket.isEmpty())
+
+        bucket[0] = null
+        bucket[1] = 100
+        val result = bucket.values
+
+        assertTrue(result.contains(null))
+        assertTrue(result.contains(100))
+    }
+
+    @Test
+    fun containsValueTest() {
+        assertFalse(bucket.containsValue(null))
+        assertFalse(bucket.containsValue(100))
+
+        bucket[0] = null
+        bucket[1] = 100
+
+        assertTrue(bucket.containsValue(null))
+        assertTrue(bucket.containsValue(100))
+    }
+
+    @Test
+    fun isEmptyTest() {
+        assertTrue(bucket.isEmpty())
+
+        bucket[0] = 0.toShort()
+
+        assertFalse(bucket.isEmpty())
     }
 }

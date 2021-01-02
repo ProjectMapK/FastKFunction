@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.mapk"
-version = "0.1.0"
+version = "0.1.2"
 
 repositories {
     mavenCentral()
@@ -24,7 +24,7 @@ dependencies {
     }
     testImplementation("io.mockk:mockk:1.10.3-jdk8")
 
-    implementation(group = "org.openjdk.jmh", name = "jmh-core", version = "1.26")
+    jmhImplementation(group = "org.openjdk.jmh", name = "jmh-core", version = "1.26")
 }
 
 tasks {

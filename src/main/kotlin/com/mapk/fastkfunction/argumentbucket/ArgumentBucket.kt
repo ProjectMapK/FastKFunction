@@ -1,6 +1,5 @@
 package com.mapk.fastkfunction.argumentbucket
 
-import java.lang.UnsupportedOperationException
 import kotlin.reflect.KParameter
 
 class ArgumentBucket(
@@ -62,13 +61,14 @@ class ArgumentBucket(
     }
 
     override val entries: Set<Map.Entry<KParameter, Any?>>
-        get() = keys.fold(HashSet()) { acc, cur ->
+        get() = keyList.fold(HashSet()) { acc, cur ->
             acc.apply { if (initializationStatuses[cur.index]) add(Entry(cur, valueArray[cur.index])) }
         }
     override val keys: Set<KParameter>
-        get() = keys.fold(HashSet()) { acc, cur ->
+        get() = keyList.fold(HashSet()) { acc, cur ->
             acc.apply { if (initializationStatuses[cur.index]) add(cur) }
         }
+    override val size: Int get() = initializationStatuses.count { it }
     override val values: Collection<Any?>
         get() = valueArray.filterIndexed { idx, _ -> initializationStatuses[idx] }
 
@@ -82,8 +82,5 @@ class ArgumentBucket(
     override fun get(key: KParameter): Any? = valueArray[key.index]
     operator fun get(index: Int): Any? = valueArray[index]
 
-    // サイズ系の処理はVALUEパラメータ以外を考慮した際の整合性を考えることが難しく、使う場面も無いためUnsupported
-    override val size: Int
-        get() = throw UnsupportedOperationException()
-    override fun isEmpty(): Boolean = throw UnsupportedOperationException()
+    override fun isEmpty(): Boolean = size == 0
 }
