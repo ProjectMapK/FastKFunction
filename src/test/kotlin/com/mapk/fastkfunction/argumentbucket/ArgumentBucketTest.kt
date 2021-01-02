@@ -79,4 +79,18 @@ private class ArgumentBucketTest {
             }
         }
     }
+
+    @Test
+    fun entriesTest() {
+        assertTrue(bucket.entries.isEmpty())
+
+        bucket[0] = 0.toShort()
+        bucket[1] = 1
+
+        val entries = bucket.entries.sortedBy { it.key.index }
+        assertEquals(2, entries.size)
+        entries.forEach {
+            assertEquals(it.key.index, (it.value as Number).toInt())
+        }
+    }
 }
