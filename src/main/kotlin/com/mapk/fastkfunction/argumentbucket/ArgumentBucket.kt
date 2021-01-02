@@ -61,11 +61,11 @@ class ArgumentBucket(
     }
 
     override val entries: Set<Map.Entry<KParameter, Any?>>
-        get() = keys.fold(HashSet()) { acc, cur ->
+        get() = keyList.fold(HashSet()) { acc, cur ->
             acc.apply { if (initializationStatuses[cur.index]) add(Entry(cur, valueArray[cur.index])) }
         }
     override val keys: Set<KParameter>
-        get() = keys.fold(HashSet()) { acc, cur ->
+        get() = keyList.fold(HashSet()) { acc, cur ->
             acc.apply { if (initializationStatuses[cur.index]) add(cur) }
         }
     override val size: Int get() = initializationStatuses.count { it }
