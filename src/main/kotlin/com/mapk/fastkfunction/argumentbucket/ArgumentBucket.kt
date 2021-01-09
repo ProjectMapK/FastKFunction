@@ -1,5 +1,6 @@
 package com.mapk.fastkfunction.argumentbucket
 
+import java.util.AbstractMap.SimpleEntry as Entry
 import kotlin.reflect.KParameter
 
 class ArgumentBucket(
@@ -8,11 +9,6 @@ class ArgumentBucket(
     private val initializationStatuses: BooleanArray,
     private val valueArrayGetter: (Array<Any?>) -> Array<Any?>
 ) : Map<KParameter, Any?> {
-    class Entry internal constructor(
-        override val key: KParameter,
-        override var value: Any?
-    ) : Map.Entry<KParameter, Any?>
-
     fun isFullInitialized(): Boolean = initializationStatuses.all { it }
 
     // getValueArrayは内部処理でしか利用しないためinternal化
