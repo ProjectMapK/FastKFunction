@@ -16,9 +16,12 @@ class ArgumentBucket(
 
     operator fun set(key: KParameter, value: Any?): Any? = set(key.index, value)
 
-    operator fun set(index: Int, value: Any?): Any? = valueArray[index].apply {
-        if (this === ABSENT_VALUE) count++
+    operator fun set(index: Int, value: Any?): Any? = if (isInitialized(index))
+        valueArray[index].apply { valueArray[index] = value }
+    else {
+        count++
         valueArray[index] = value
+        null // 値がABSENT_VALUEならnullを返す
     }
 
     /**
@@ -31,11 +34,12 @@ class ArgumentBucket(
      * If the specified key is not already associated with a value associates it with the given value and returns
      * {@code null}, else returns the current value.
      */
-    fun setIfAbsent(index: Int, value: Any?): Any? = valueArray[index].apply {
-        if (this === ABSENT_VALUE) {
-            count++
-            valueArray[index] = value
-        }
+    fun setIfAbsent(index: Int, value: Any?): Any? = if (isInitialized(index))
+        valueArray[index]
+    else {
+        count++
+        valueArray[index] = value
+        null // 値がABSENT_VALUEならnullを返す
     }
 
     private fun isInitialized(index: Int): Boolean = valueArray[index] !== ABSENT_VALUE
