@@ -3,6 +3,9 @@ package com.mapk.fastkfunction.argumentbucket
 import org.jetbrains.annotations.TestOnly
 import kotlin.reflect.KParameter
 
+// 初期化前の値
+internal val ABSENT_VALUE = Any()
+
 internal class BucketGenerator(private val parameters: List<KParameter>, instance: Any?) {
     private val originalValueArray: Array<Any?> = Array(parameters.size) { null }
     private val originalInitializationStatuses: BooleanArray = BooleanArray(parameters.size)
