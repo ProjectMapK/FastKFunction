@@ -66,5 +66,5 @@ class ArgumentBucket(
     override fun get(key: KParameter): Any? = valueArray[key.index]
     operator fun get(index: Int): Any? = valueArray[index]
 
-    override fun isEmpty(): Boolean = size == 0
+    override fun isEmpty(): Boolean = count == 0
 }
