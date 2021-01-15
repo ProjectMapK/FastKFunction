@@ -15,7 +15,6 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
 
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter
