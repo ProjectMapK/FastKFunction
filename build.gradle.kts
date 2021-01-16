@@ -8,14 +8,13 @@ plugins {
 }
 
 group = "com.mapk"
-version = "0.1.2"
+version = "0.1.3"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
 
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter
