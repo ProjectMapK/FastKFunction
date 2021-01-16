@@ -1,7 +1,7 @@
 package com.mapk.fastkfunction.argumentbucket
 
-import java.util.AbstractMap.SimpleEntry as Entry
 import kotlin.reflect.KParameter
+import java.util.AbstractMap.SimpleEntry as Entry
 
 class ArgumentBucket(
     private val keyList: List<KParameter>,
