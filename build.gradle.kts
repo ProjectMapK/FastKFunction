@@ -57,11 +57,15 @@ tasks {
 }
 
 jmh {
-    fork = 3
-    iterations = 3
-    threads = 3
+    warmupForks = 2
     warmupBatchSize = 3
     warmupIterations = 3
+    warmup = "1s"
+
+    fork = 2
+    batchSize = 3
+    iterations = 2
+    timeOnIteration = "1500ms"
 
     failOnError = true
     isIncludeTests = false
