@@ -42,17 +42,18 @@ and more than 6 times faster than calling it with `callBy`.
 
 You can get the same speed as `reflection` in `Java`.
 
-|                       | ops/s       |Ratio|
-|-----------------------|------------:|-----|
-| Java Constructor      |`104267558.4`|`6.7`|
-| FastKFunction(call)   |`102948283.4`|`6.6`|
-| FastKFunction(callBy) |`105609306.2`|`6.8`|
-| KFunction(call)       | `77096714.2`|`5.0`|
-| KFunction(callBy)     | `15519730.2`|`1`  |
+|                           | ops/s       |Ratio|
+|---------------------------|------------:|-----|
+| **Java Constructor**      |`104267558.4`|`6.7`|
+| **FastKFunction(call)**   |`102948283.4`|`6.6`|
+| **FastKFunction(callBy)** |`105609306.2`|`6.8`|
+| **KFunction(call)**       | `77096714.2`|`5.0`|
+| **KFunction(callBy)**     | `15519730.2`|`1`  |
 
 ![ConstructorBenchmarkResultGraph.png](./pictures/ConstructorBenchmarkResultGraph.png)
 
-*This is the score I got on a `Ryzen7 3700X` in a `Windows 10` environment, with [3b8687](https://github.com/ProjectMapK/FastKFunction/tree/3b8687da712319a49e4f58a38edbb016cc0c41b7) committed.
+_This score was measured with `Ryzen7 3700X`, `Windows10`, [3b8687](https://github.com/ProjectMapK/FastKFunction/tree/3b8687da712319a49e4f58a38edbb016cc0c41b7) committed code and benchmark settings._  
+_It is currently a little faster with small improvements._
 
 ### Raw data, and other comparisons
 You can get full benchmark score and some other graphs [here](https://docs.google.com/spreadsheets/d/1DJhf8KX1-BAxCGor5cZdlO3626AZbKeet-rkk26XGAE/).
@@ -65,7 +66,7 @@ I have a blog post on the mechanism of fast invocation (in Japanese).
 
 ### Benchmarking
 You can run the benchmark with the `./gradlew jmh`.  
-Please note that it will take about 5 hours in total if executed with the default settings.
+It takes about 45 minutes to run a complete benchmark.
 
 ```bash
 ./gradlew jmh
