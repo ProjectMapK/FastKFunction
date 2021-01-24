@@ -108,20 +108,6 @@ Calling the `constructor` of an `inner class` or an `extension function` defined
 ### How to call
 `FastKFunction` supports two major types of calls.
 
-#### Call by vararg or Collection
-Calling with `vararg` or `Collection` is faster if you don't need to use the `default arguments` and
- can get them in the order in which they are defined.
-
-```kotlin
-val fastKFunction: FastKFunction<Sample> = FastKFunction.of(function)
-
-// call by vararg
-val result: Sample = fastKFunction.call(1, 2, 3, 4, 5)
-
-// call by Collection
-val result: Sample = fastKFunction.callByCollection(listOf(1, 2, 3, 4, 5))
-```
-
 #### Call by ArgumentBucket
 If the `default argument` is expected to be used, a call using `ArgumentBucket` is available.
 
@@ -144,6 +130,20 @@ fun map(src: Map<String, Any?>): Sample {
             }
         }.let { fastKFunction.callBy(it) }
 }
+```
+
+#### Call by vararg or Collection
+Calling with `vararg` or `Collection` is faster if you don't need to use the `default arguments` and
+ can get them in the order in which they are defined.
+
+```kotlin
+val fastKFunction: FastKFunction<Sample> = FastKFunction.of(function)
+
+// call by vararg
+val result: Sample = fastKFunction.call(1, 2, 3, 4, 5)
+
+// call by Collection
+val result: Sample = fastKFunction.callByCollection(listOf(1, 2, 3, 4, 5))
 ```
 
 ### For functions that can be called from a single argument
