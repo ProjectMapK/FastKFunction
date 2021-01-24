@@ -88,24 +88,22 @@ Please see here for the introduction method.
 
 ## How to use FastKFunction
 
-### Instance parameter
-If you call an instance function, you can expect a faster call with `instance parameter`.
+### Initialization
+In some cases, `instance parameter` is required to initialize `FastKFunction`.
+Even if the `instance parameter` is not required, passing it may speed up the process.
 
-```kotlin
-data class Sample(
-    val arg1: Int,
-    val arg2: Int
-) {
-    fun instanceFun(arg3: Int): Int = arg1 + arg2 + arg3
-}
+The following is the correspondence table.
 
-val sample = Sample(1, 2)
+|                                     | instance parameter | description                                                |
+|:-----------------------------------:|:------------------:|------------------------------------------------------------|
+|           **Constructor**           |     Unnecessary    |                                                            |
+|        **Top level function**       |     Unnecessary    |                                                            |
+|  **Method reference from instance** |      Optional      | Passing the `instance parameter` will speed up the call.   |
+| **Function defined for the object** |      Optional      | Passing `instance parameter` will speed up initialization. |
+| **Top level extension function**    |      Required      |                                                            |
+| **Method reference from class**     |      Required      |                                                            |
 
-val fastKFunction = FastKFunction.of(sample::instanceFun, sample)
-```
-
-Depending on how you get the `KFunction`, the `instance parameter` may be required.
-Even if the `instance parameter` is not required, passing an `instance parameter` will make the call faster.
+Calling the `constructor` of an `inner class` or an `extension function` defined in an `instance` is currently not supported.
 
 ### How to call
 `FastKFunction` supports two major types of calls.
