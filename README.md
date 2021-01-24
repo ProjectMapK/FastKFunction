@@ -79,9 +79,9 @@ Please see here for the introduction method.
 
 - [ProjectMapK / FastKFunction](https://jitpack.io/#ProjectMapK/FastKFunction)
 
-## How to use FastKFunction.
+## How to use FastKFunction
 
-### Instance parameter.
+### Instance parameter
 If you call an instance function, you can expect a faster call with `instance parameter`.
 
 ```kotlin
@@ -100,10 +100,10 @@ val fastKFunction = FastKFunction.of(sample::instanceFun, sample)
 Depending on how you get the `KFunction`, the `instance parameter` may be required.
 Even if the `instance parameter` is not required, passing an `instance parameter` will make the call faster.
 
-### How to call.
+### How to call
 `FastKFunction` supports two major types of calls.
 
-#### Call by vararg or Collection.
+#### Call by vararg or Collection
 Calling with `vararg` or `Collection` is faster if you don't need to use the default arguments and
  can get them in the order in which they are defined.
 
@@ -117,7 +117,7 @@ val result: Sample = fastKFunction.call(1, 2, 3, 4, 5)
 val result: Sample = fastKFunction.callByCollection(listOf(1, 2, 3, 4, 5))
 ```
 
-#### Call by ArgumentBucket.
+#### Call by ArgumentBucket
 If the default argument is expected to be used, a call using `ArgumentBucket` is available.
 
 `ArgumentBucket` has interfaces like `MutableMap<KParameter, Any?>`, which can be used, for example, as follows.
@@ -141,7 +141,7 @@ fun map(src: Map<String, Any?>): Sample {
 }
 ```
 
-### For functions that can be called from a single argument.
+### For functions that can be called from a single argument
 For a function that can be called with a single argument, you can use the `SingleArgFastKFunction`.
 
 ```kotlin
