@@ -37,7 +37,7 @@ val result: Sample = fastKFunction.generateBucket()
 ```
 
 ## How Fast?
-Calling the constructor is more than 1.2 times faster than calling `KFunction` with `call`,
+Calling the `constructor` is more than 1.2 times faster than calling `KFunction` with `call`,
 and more than 6 times faster than calling it with `callBy`.
 
 You can get the same speed as `reflection` in `Java`.
@@ -104,7 +104,7 @@ Even if the `instance parameter` is not required, passing an `instance parameter
 `FastKFunction` supports two major types of calls.
 
 #### Call by vararg or Collection
-Calling with `vararg` or `Collection` is faster if you don't need to use the default arguments and
+Calling with `vararg` or `Collection` is faster if you don't need to use the `default arguments` and
  can get them in the order in which they are defined.
 
 ```kotlin
@@ -118,7 +118,7 @@ val result: Sample = fastKFunction.callByCollection(listOf(1, 2, 3, 4, 5))
 ```
 
 #### Call by ArgumentBucket
-If the default argument is expected to be used, a call using `ArgumentBucket` is available.
+If the `default argument` is expected to be used, a call using `ArgumentBucket` is available.
 
 `ArgumentBucket` has interfaces like `MutableMap<KParameter, Any?>`, which can be used, for example, as follows.
 
