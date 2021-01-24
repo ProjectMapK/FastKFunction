@@ -22,6 +22,7 @@ jobs:
       - name: ktlint check
         run: ./gradlew ktlintCheck
       - name: Test with Gradle
+        if: always()
         run: ./gradlew test
       - name: upload coverage
         uses: codecov/codecov-action@v1
