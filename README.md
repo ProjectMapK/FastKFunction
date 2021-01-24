@@ -59,6 +59,13 @@ _It is currently a little faster with small improvements._
 You can get full benchmark score and some other graphs [here](https://docs.google.com/spreadsheets/d/1DJhf8KX1-BAxCGor5cZdlO3626AZbKeet-rkk26XGAE/).
 
 ### Mechanism
+`FastKFunction` realizes high speed by the following ingenuity.
+
+- Call `KFunction` with `call` if the argument is fully initialized.
+ - If possible, call `Java` `Method` or `Constructor` directly for further speedup.
+- Efficient retention of arguments and switching between `call`/`callBy` calls by devising a data structure.
+- Avoid using `spread operator` as much as possible.
+
 I have a blog post on the mechanism of fast invocation (in Japanese).
 
 - [【Kotlin】KFunctionを高速に呼び出す（前編） \- Qiita](https://qiita.com/wrongwrong/items/f7b15d54956191f471d1)
