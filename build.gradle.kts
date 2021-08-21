@@ -1,14 +1,14 @@
 plugins {
     id("maven")
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.21"
     // プロダクションコード以外
-    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
     id("jacoco")
     id("me.champeau.gradle.jmh") version "0.5.3"
 }
 
 group = "com.mapk"
-version = "0.1.4"
+version = "0.1.5"
 
 repositories {
     mavenCentral()
@@ -18,10 +18,10 @@ dependencies {
     implementation(kotlin("reflect"))
 
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.7.1") {
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.7.2") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-    testImplementation("io.mockk:mockk:1.11.0")
+    testImplementation("io.mockk:mockk:1.12.0")
 }
 
 tasks {
